@@ -1,0 +1,119 @@
+#!/usr/bin/env python3
+
+from os import environ as env
+from dotenv import load_dotenv
+
+from ipaddress import ip_address
+from requests import post
+
+load_dotenv()
+ST_USER   = env.get('API_KEY_SECURITY_TRAILS')
+
+_dict     = None
+
+class StRecord:
+  def __init__(self, hostname, host_provider, mail_provider, registrar, created, expires, company):
+    self.hostname       = hostname
+    self.host_provider  = host_provider
+    self.mail_provider  = mail_provider
+    self.registrar      = registrar
+    self.created        = created
+    self.expires        = expires
+    self.company        = company
+
+class StResponse:
+  def __init__(self, response):
+    self.obj  = response
+
+    try:
+      self.records  = self.obj['records']
+      self.amount   = self.obj['record_count']
+      self.meta     = self.obj['meta']
+      self.reduced  = []
+    except:
+      pass
+
+    for record in self.records:
+      entry = StRecord(
+        record['hostname'],
+        record['host_provider'],
+        record['mail_provider'],
+        record['whois']['registrar'],
+        record['whois']['createdDate'],
+        record['whois']['expiresDate'],
+        record['computed']['company_name']
+      )
+      self.reduced.append(entry)
+
+def validate(target):
+  try:
+    ip_type = ip_address(target)
+  except Exception as f:
+    f_name = str(type(f).__name__)
+    print(f_name, ':', f)
+    raise f
+  else:
+    return ip_type.version
+
+def pull(ip_version, target):
+  endpoint  = 'https://api.securitytrails.com/v1/domains/list?include_ips=false&page=1&scroll=false'
+  headers   = {
+    "Content-Type": "application/json",
+    "APIKEY": str(ST_USER)
+  }
+  filter    = "ipv" + str(ip_version)
+  data      = {"filter": {filter: target}}
+
+  try:
+    response  = post(endpoint, json=data, headers=headers)
+  except Exception as f:
+    f_name = str(type(f).__name__)
+    print(f_name, ':', f)
+    raise f
+
+  return response
+
+def clean_up(response):
+  result = StResponse(response)
+  return result
+
+def make_pretty(obj_list):
+  output = ""
+
+  for entry in obj_list:
+    output += "\n"
+    output += entry.hostname
+    output += ", "
+
+    if entry.host_provider is not None:
+      for item in entry.host_provider:
+        output += item
+        output += ", "
+
+    if entry.mail_provider is not None:
+      for item in entry.mail_provider:
+        output += item
+        output += ", "
+
+  return output
+
+def reverse(target):
+  try:
+    ip_version = validate(target)
+  except:
+    return
+
+  if ST_USER is not None:
+    try:
+      response = pull(ip_version, target)
+    except:
+      return
+
+    try:
+      result = clean_up(response.json())
+      output = make_pretty(result.reduced)
+      print(output)
+    except Exception as f:
+      f_name = str(type(f).__name__)
+      print(f_name, ':', f, '\n\n')
+      print(str(response.text))
