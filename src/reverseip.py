@@ -24,26 +24,31 @@ class StRecord:
 class StResponse:
   def __init__(self, response):
     self.obj  = response
+    self.reduced  = []
 
-    try:
-      self.records  = self.obj['records']
-      self.amount   = self.obj['record_count']
-      self.meta     = self.obj['meta']
-      self.reduced  = []
-    except:
-      pass
+    if self.obj['records']:
+      try:
+        self.records  = self.obj['records']
+        self.amount   = self.obj['record_count']
+        self.meta     = self.obj['meta']
+      except:
+        pass
 
-    for record in self.records:
-      entry = StRecord(
-        record['hostname'],
-        record['host_provider'],
-        record['mail_provider'],
-        record['whois']['registrar'],
-        record['whois']['createdDate'],
-        record['whois']['expiresDate'],
-        record['computed']['company_name']
-      )
-      self.reduced.append(entry)
+      for record in self.records:
+        entry = StRecord(
+          record['hostname'],
+          record['host_provider'],
+          record['mail_provider'],
+          record['whois']['registrar'],
+          record['whois']['createdDate'],
+          record['whois']['expiresDate'],
+          record['computed']['company_name']
+        )
+        self.reduced.append(entry)
+
+    elif self.obj['message']:
+      self.message  = self.obj['message']
+      self.reduced.append(self.message)
 
 def validate(target):
   try:
@@ -78,22 +83,36 @@ def clean_up(response):
   return result
 
 def make_pretty(obj_list):
-  output = ""
+  i       = 0
+  output  = ""
 
   for entry in obj_list:
-    output += "\n"
-    output += entry.hostname
-    output += ", "
+    i = i+1
+
+    if entry.hostname is not None:
+      output += "\n\n"
+      output += str(i)
+      output += ".\nHost name: "
+      output += entry.hostname
 
     if entry.host_provider is not None:
+      output += "\n"
+      output += "Host providers: "
+
       for item in entry.host_provider:
         output += item
         output += ", "
 
     if entry.mail_provider is not None:
+      output += "\n"
+      output += "Mail providers: "
+
       for item in entry.mail_provider:
         output += item
         output += ", "
+    
+  if len(obj_list) == 1:
+    output += str(obj_list[0])
 
   return output
 
