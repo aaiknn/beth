@@ -100,7 +100,7 @@ def make_pretty(obj_list):
       output += "Host providers: "
 
       for item in entry.host_provider:
-        output += item
+        output += str(item)
         output += ", "
 
     if entry.mail_provider is not None:
@@ -108,7 +108,7 @@ def make_pretty(obj_list):
       output += "Mail providers: "
 
       for item in entry.mail_provider:
-        output += item
+        output += str(item)
         output += ", "
     
   if len(obj_list) == 1:
