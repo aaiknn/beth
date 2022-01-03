@@ -22,28 +22,43 @@ class UsRecord:
     self.uuid           = uuid
     self.visibility     = visibility
 
+class UsMessage:
+  def __init__(self, target, sc, message):
+    self.message        = message
+    self.result         = str(sc)
+    self.url            = target
+
 class UsResponse:
   def __init__(self, response):
-    self.entry  = UsRecord(
-      response['api'],
-      response['country'],
-      response['message'],
-      response['options'],
-      response['result'],
-      response['url'],
-      response['uuid'],
-      response['visibility']
-    )
+
+    try:
+      uuid = response['uuid']
+      self.entry  = UsRecord(
+        response['api'],
+        response['country'],
+        response['message'],
+        response['options'],
+        response['result'],
+        response['url'],
+        response['uuid'],
+        response['visibility']
+      )
+    except Exception as f:
+      raise f
 
 def make_pretty(response):
-  _dict       = UsResponse(response.json())
-  output      = ""
-  output      += _dict.entry.message
-  output      += ": "
-  output      += _dict.entry.result
-  output      += " ("
-  output      += _dict.entry.url
-  output      += ")."
+  try:
+    _dict       = UsResponse(response.json())
+    output      = ""
+    output      += _dict.entry.message
+    output      += ": "
+    output      += _dict.entry.result
+    output      += " ("
+    output      += _dict.entry.url
+    output      += ")."
+
+  except Exception as f:
+    raise f
 
   return output
 
@@ -56,7 +71,24 @@ def scan_submission(target):
 
 def scan(target):
   if US_USER is not None:
-    response = scan_submission(target)
-    print(make_pretty(response))
+    response  = scan_submission(target)
+    sc        = response.status_code
+
+    if sc == 200:
+      try:
+        print(make_pretty(response))
+      except Exception as f:
+        print(f)
+        return
+
+    else:
+      m       = response.json()
+      result  = UsMessage(
+        target,
+        sc,
+        m['message']
+      )
+      print(f"Response code {result.result}: {result.message} ({result.url}).")
+
   else:
     return
