@@ -12,8 +12,10 @@ def verify_email(address):
 
   if response.status_code == 200:
     result  = response.text
+  elif response.status_code == 429:
+    raise EmailVerificationException(f'Unable to verify email address: Emailrep.io rate limit reached.')
   else:
-    raise EmailVerificationException(f'Unable to verify email address: status not OK, but {response.status_code}.')
+    raise EmailVerificationException(f'Unable to verify email address: Status not OK, but {response.status_code}.')
 
   return result
 
