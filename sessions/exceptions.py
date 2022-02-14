@@ -48,6 +48,10 @@ class ModuleException(BethException):
   def __init__(self, exceptionMessage=''):
     super().__init__(exceptionMessage)
 
+class UnreachableException(ModuleException):
+  def __init__(self, exceptionMessage=''):
+    super().__init__(exceptionMessage)
+
 class VerificationException(ModuleException):
   def __init__(self, exceptionMessage=''):
     super().__init__(exceptionMessage)

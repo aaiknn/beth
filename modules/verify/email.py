@@ -2,20 +2,25 @@
 
 from requests import get
 
-from sessions.exceptions import EmailVerificationException
+from sessions.exceptions import EmailVerificationException, UnreachableException
+from phrases import exceptions as e
 
 email_check_url = 'https://emailrep.io/'
 
 def verify_email(address):
   url       = email_check_url + address
-  response  = get(url)
+
+  try:
+    response  = get(url)
+  except Exception as f:
+    raise UnreachableException(f'{e.verify_email_failed}: {f}')
 
   if response.status_code == 200:
     result  = response.text
   elif response.status_code == 429:
-    raise EmailVerificationException(f'Unable to verify email address: Emailrep.io rate limit reached.')
+    raise EmailVerificationException(f'{e.verify_email_failed}: Emailrep.io rate limit reached.')
   else:
-    raise EmailVerificationException(f'Unable to verify email address: Status not OK, but {response.status_code}.')
+    raise EmailVerificationException(f'{e.verify_email_failed}: Status not OK, but {response.status_code}.')
 
   return result
 
@@ -24,4 +29,4 @@ def verify(target):
     result = verify_email(target)
     print(result)
   except Exception as f:
-    print(f)
+    print(f'{e.verify_email_failed}: {f}')
