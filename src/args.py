@@ -2,6 +2,7 @@
 
 from argparse import ArgumentParser
 from argparse import SUPPRESS
+from sys import argv
 
 parser      = ArgumentParser()
 
@@ -11,8 +12,9 @@ subparsers  = parser.add_subparsers(
   help='Research steps'
 )
 
+stare     = subparsers.add_parser('investigate', aliases=['-I'])
 peek      = subparsers.add_parser('lookup', aliases=['-L'])
-stalk     = subparsers.add_parser('investigate', aliases=['-I'])
+record    = subparsers.add_parser('record', aliases=['-S'])
 
 # PEEK PARSER
 peek.add_argument(
@@ -31,8 +33,8 @@ peek.add_argument(
   required=False
 )
 
-# STALK PARSER
-stalk.add_argument(
+# STARE PARSER
+stare.add_argument(
   '--scan',
   default=SUPPRESS,
   help='Urlscan.io querying of a target',
@@ -42,5 +44,8 @@ stalk.add_argument(
 
 # EXPORT ARGS
 def parse():
-  args = parser.parse_args()
-  return vars(args)
+  args = [
+    argv[1],
+    parser.parse_args()
+  ]
+  return args

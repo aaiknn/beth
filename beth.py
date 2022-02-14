@@ -7,32 +7,42 @@ from src.reverseip import reverse
 
 from src.globals import structures as st 
 
-jobs = args.parse()
+modules   = args.parse()
+module    = modules[0]
+jobs      = vars(modules[1])
 
 def end_graciously():
     print(st['glorious_separation'])
 
-for module in jobs:
-  try:
-    for target in jobs[module]:
-      print(st['glorious_separation'])
-      print('module:', module, '\ntarget:', target)
-      print(st['glorious_separation'])
+def the_most_important_function(jobs):
+  for job in jobs:
 
-      if module == 'dns':
-        records = collect(target)
-        end_graciously()
-        break
+    try:
+      for target in jobs[job]:
+        print(st['glorious_separation'])
+        print(
+          'module :', module,
+          '\njob    :', job,
+          '\ntarget :', target)
+        print(st['glorious_separation'])
 
-      elif module == 'reverse':
-        reverse(target)
-        end_graciously()
-        break
+        if job == 'dns':
+          records = collect(target)
+          end_graciously()
+          break
 
-      elif module == 'scan':
-        scan(target)
-        end_graciously()
-        break
+        elif job == 'reverse':
+          reverse(target)
+          end_graciously()
+          break
 
-  except KeyboardInterrupt:
-    break
+        elif job == 'scan':
+          scan(target)
+          end_graciously()
+          break
+
+    except KeyboardInterrupt:
+      end_graciously()
+      break
+
+the_most_important_function(jobs)
