@@ -5,6 +5,8 @@ from src.dns import collect
 from src.domainscan import scan
 from src.reverseip import reverse
 
+from modules.verify import email
+
 from src.globals import structures as st 
 
 modules   = args.parse()
@@ -28,6 +30,11 @@ def the_most_important_function(jobs):
 
         if job == 'dns':
           records = collect(target)
+          end_graciously()
+          break
+
+        elif job == 'email':
+          email.verify(target)
           end_graciously()
           break
 

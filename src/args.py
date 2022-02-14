@@ -12,6 +12,7 @@ subparsers  = parser.add_subparsers(
   help='Research steps'
 )
 
+verify    = subparsers.add_parser('check', aliases=['-C'])
 stare     = subparsers.add_parser('investigate', aliases=['-I'])
 peek      = subparsers.add_parser('lookup', aliases=['-L'])
 record    = subparsers.add_parser('record', aliases=['-S'])
@@ -38,6 +39,15 @@ stare.add_argument(
   '--scan',
   default=SUPPRESS,
   help='Urlscan.io querying of a target',
+  nargs=1,
+  required=False
+)
+
+# VERIFY PARSER
+verify.add_argument(
+  '--email',
+  default=SUPPRESS,
+  help='Emailrep.io querying of an email address',
   nargs=1,
   required=False
 )
