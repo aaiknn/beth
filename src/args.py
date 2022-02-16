@@ -13,6 +13,7 @@ subparsers  = parser.add_subparsers(
 )
 
 verify    = subparsers.add_parser('check', aliases=['-C'])
+query     = subparsers.add_parser('query', aliases=['-Q'])
 stare     = subparsers.add_parser('investigate', aliases=['-I'])
 peek      = subparsers.add_parser('lookup', aliases=['-L'])
 record    = subparsers.add_parser('record', aliases=['-S'])
@@ -30,7 +31,15 @@ peek.add_argument(
   '--reverse',
   default=SUPPRESS,
   help='Reverse IP lookup of a target',
-  nargs=1,
+  nargs=2,
+  required=False
+)
+
+query.add_argument(
+  '--urlscan',
+  default=SUPPRESS,
+  help='Query Urlscan',
+  nargs='*',
   required=False
 )
 

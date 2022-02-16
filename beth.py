@@ -6,6 +6,7 @@ from src.domainscan import scan
 from src.reverseip import reverse
 
 from modules.verify import email
+from modules.query.urlscan import query
 
 from src.globals import structures as st 
 
@@ -20,6 +21,25 @@ def the_most_important_function(jobs):
   for job in jobs:
 
     try:
+
+      if job == 'urlscan':
+        args = jobs[job]
+
+        print(st['glorious_separation'])
+        print(
+          'module :', module,
+          '\njob    :', job,
+          '\ntarget :', args[0])
+        print(st['glorious_separation'])
+
+        try:
+          query(*args)
+        except Exception as f:
+          print(f)
+        
+        end_graciously()
+        break
+
       for target in jobs[job]:
         print(st['glorious_separation'])
         print(
@@ -29,7 +49,7 @@ def the_most_important_function(jobs):
         print(st['glorious_separation'])
 
         if job == 'dns':
-          records = collect(target)
+          collect(target)
           end_graciously()
           break
 

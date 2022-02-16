@@ -7,6 +7,7 @@
 #     |   *-- DatabaseException
 #     |   *-- ModuleException
 #     |   |   |
+#     |   |   *-- QueryException
 #     |   |   *-- VerificationException
 #     |   |   *-- UnreachableException
 #     |   |
@@ -20,6 +21,8 @@
 #     |
 #     *-- SessionException
 #     *-- SituationException
+#     |   |
+#     |   *-- AuthorisationException
 #     |
 #     *-- TypeError (BUILT-IN)
 #     |   |
@@ -48,7 +51,19 @@ class ModuleException(BethException):
   def __init__(self, exceptionMessage=''):
     super().__init__(exceptionMessage)
 
+class SituationException(BethException):
+  def __init__(self, exceptionMessage=''):
+    super().__init__(exceptionMessage)
+
+class AuthorisationException(SituationException):
+  def __init__(self, exceptionMessage=''):
+    super().__init__(exceptionMessage)
+
 class UnreachableException(ModuleException):
+  def __init__(self, exceptionMessage=''):
+    super().__init__(exceptionMessage)
+
+class QueryException(ModuleException):
   def __init__(self, exceptionMessage=''):
     super().__init__(exceptionMessage)
 

@@ -17,10 +17,24 @@ Note: This feature needs a SecurityTrails API key in order to work.
 
 Example: `beth lookup --reverse 135.181.208.158`
 
+## Query
+Ask around the internet for advice.
+Alias: `-Q`
+
+### Urlscan
+Note: This feature needs a urlscan.io API key in order to work.
+
+`query --urlscan <QUERY_STRING> [RESULTS_AMOUNT]` finds entries on Urlscan.
+
+For information on query string formatting, see [Urlscan Search API Docs](https://urlscan.io/docs/search/).
+
+Example: `beth query --urlscan page.domain:dontasktoask.com`
+
 ## Investigate
 More in-depth investigation.
 Alias: `-I`
 
+### Scan
 Note: This feature needs a urlscan.io API key in order to work.
 
 `investigate --scan <URL>` retrieves information on the target webpage from urlscan.io.
