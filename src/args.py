@@ -43,6 +43,16 @@ query.add_argument(
   required=False
 )
 
+query.add_argument(
+  '-R',
+  default=SUPPRESS,
+  help='Set repeated Urlscan query switch',
+  action='store_const',
+  const='REPEAT',
+  dest='options',
+  required=False
+)
+
 # STARE PARSER
 stare.add_argument(
   '--scan',

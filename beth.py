@@ -8,14 +8,14 @@ from src.reverseip import reverse
 from modules.verify import email
 from modules.query.urlscan import query
 
-from src.globals import structures as st 
+from src.globals import structures as st
 
 modules   = args.parse()
 module    = modules[0]
 jobs      = vars(modules[1])
 
 def end_graciously():
-    print(st['glorious_separation'])
+  print(st['glorious_separation'])
 
 def the_most_important_function(jobs):
   for job in jobs:
@@ -27,16 +27,28 @@ def the_most_important_function(jobs):
 
         print(st['glorious_separation'])
         print(
-          'module :', module,
-          '\njob    :', job,
-          '\ntarget :', args[0])
-        print(st['glorious_separation'])
+          'module  :', module,
+          '\njob     :', job,
+          '\ntarget  :', args[0]
+        )
 
-        try:
-          query(*args)
-        except Exception as f:
-          print(f)
-        
+        if 'options' in vars(modules[1]):
+          print('options :', str(modules[1].options))
+          print(st['glorious_separation'])
+
+          try:
+            query(*args, options=modules[1].options)
+          except Exception as f:
+            print(f)
+
+        else:
+          print(st['glorious_separation'])
+
+          try:
+            query(*args)
+          except Exception as f:
+            print(f)
+
         end_graciously()
         break
 

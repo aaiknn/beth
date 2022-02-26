@@ -30,6 +30,15 @@ For information on query string formatting, see [Urlscan Search API Docs](https:
 
 Example: `beth query --urlscan page.domain:dontasktoask.com`
 
+Note: A default value of the amount of results that are retrieved can be set in your .env file.
+
+#### Options
+```sh
+-R      Repeatedly run the specified query without ever stopping.
+```
+
+Note: The amount of seconds that pass before the next query is sent can be set in your .env file.
+
 ## Investigate
 More in-depth investigation.
 Alias: `-I`
