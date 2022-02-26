@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+from utils.trough.Trough import Troughs, Trough
+
 from src import args
 from src.dns import collect
 from src.domainscan import scan
@@ -10,26 +12,32 @@ from modules.query.urlscan import query
 
 from src.globals import structures as st
 
-modules   = args.parse()
-module    = modules[0]
-jobs      = vars(modules[1])
+modules         = args.parse()
+module          = modules[0]
+jobs            = vars(modules[1])
 
-def end_graciously():
+sessionTroughs  = Troughs()
+
+def end_graciously(jobTrough):
+  sessionTroughs.entries.append(jobTrough)
   print(st['glorious_separation'])
 
 def the_most_important_function(jobs):
   for job in jobs:
 
-    try:
+    if job == 'urlscan':
+      args        = jobs[job]
+      target      = args[0]
+      jobTrough   = Trough(f'{module}#{job}#{target}#')
 
+    try:
       if job == 'urlscan':
-        args = jobs[job]
 
         print(st['glorious_separation'])
         print(
           'module  :', module,
           '\njob     :', job,
-          '\ntarget  :', args[0]
+          '\ntarget  :', target
         )
 
         if 'options' in vars(modules[1]):
@@ -37,7 +45,7 @@ def the_most_important_function(jobs):
           print(st['glorious_separation'])
 
           try:
-            query(*args, options=modules[1].options)
+            jobTrough = query(jobTrough, *args, options=modules[1].options)
           except Exception as f:
             print(f)
 
@@ -45,14 +53,16 @@ def the_most_important_function(jobs):
           print(st['glorious_separation'])
 
           try:
-            query(*args)
+            jobTrough = query(jobTrough, *args)
           except Exception as f:
             print(f)
 
-        end_graciously()
+        end_graciously(jobTrough)
         break
 
       for target in jobs[job]:
+        jobTrough   = Trough(f'{module}#{job}#{target}#')
+
         print(st['glorious_separation'])
         print(
           'module :', module,
@@ -62,26 +72,31 @@ def the_most_important_function(jobs):
 
         if job == 'dns':
           collect(target)
-          end_graciously()
+          end_graciously(jobTrough)
           break
 
         elif job == 'email':
           email.verify(target)
-          end_graciously()
+          end_graciously(jobTrough)
           break
 
         elif job == 'reverse':
           reverse(target)
-          end_graciously()
+          end_graciously(jobTrough)
           break
 
         elif job == 'scan':
           scan(target)
-          end_graciously()
+          end_graciously(jobTrough)
           break
 
     except KeyboardInterrupt:
-      end_graciously()
+      end_graciously(jobTrough)
       break
 
 the_most_important_function(jobs)
+
+if len(sessionTroughs.entries) > 0:
+  sessionTroughs.persist()
+
+  print(st['glorious_separation'])

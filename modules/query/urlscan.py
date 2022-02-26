@@ -3,10 +3,11 @@
 from time import sleep
 from os import environ as env
 from dotenv import load_dotenv
-
 from requests import get
 
 from sessions.exceptions import AuthorisationException, QueryException, UnreachableException
+from utils.trough.TroughObject import UrlscanResultTroughObject as UsTO
+
 from phrases import exceptions as e
 
 load_dotenv()
@@ -17,8 +18,11 @@ DEFAULT_INTERVAL  = env.get('DEFAULT_URLSCAN_QUERY_INTERVAL')
 
 def make_pretty(response):
   _dict         = response.json()
+  res_amount    = len(_dict['results'])
   max_amount    = _dict['total']
   i             = 1
+
+  print(f'Total results: {max_amount}\nDisplaying {res_amount}.\n')
 
   for entry in _dict['results']:
     i_date        = entry['indexedAt']
@@ -33,7 +37,6 @@ def make_pretty(response):
     print(f'{i} - {_date}: \033[33m{fqdm}\033[0m')
 
     if 'page' in r_keys:
-      p_domain        = entry['page']['domain']
       p_asnn          = entry['page']['asnname']
       p_asn           = entry['page']['asn']
       p_ip            = entry['page']['ip']
@@ -45,11 +48,11 @@ def make_pretty(response):
 
     if 'result' in r_keys:
       r_result        = entry['result']
-      print(f'  Scan location: {r_result}')
+      print(f'  Scan response location: {r_result}')
 
     if 'screenshot' in r_keys:
       r_screenshot    = entry['screenshot']
-      print(f'  Website screenshot: {r_screenshot}')
+      print(f'  Website screenshot location: {r_screenshot}')
 
     if 'tags' in t_keys:
       _tags     = entry['task']['tags']
@@ -62,8 +65,6 @@ def make_pretty(response):
       print(f'  Tags: {output[:-2]}')
 
     i = i+1
-
-  print(f'Total results: {max_amount}')
 
 def retrieve(*args):
   term            = args[0]
@@ -81,8 +82,30 @@ def retrieve(*args):
 
   return response
 
-def query(*args, **options):
-  _options = options.get('options')
+def save_unique_to_trough(response, trough):
+  _dict       = response.json()
+  _array      = []
+  _positions  = []
+
+  i = 0
+
+  for entry in _dict['results']:
+    if entry['page']['domain'] not in _array:
+      _positions.append(i)
+      _array.append(entry['page']['domain'])
+
+    i = i+1
+  
+  print(f'\n{len(_array)} unique domains.')
+
+  for index in _positions:
+    result  = _dict['results'][index]
+    to  = UsTO(result)
+    trough.data.append(to)
+    print(result['task']['domain'])
+
+def query(trough, *args, **options):
+  _options    = options.get('options')
 
   if US_USER is not None:
     response  = retrieve(*args)
@@ -90,6 +113,7 @@ def query(*args, **options):
 
     if sc == 200:
       make_pretty(response)
+      save_unique_to_trough(response, trough)
     elif sc == 429:
       raise QueryException(f'{e.query_urlscan_failed}: Urlscan rate limit reached.')
     else:
@@ -107,3 +131,5 @@ def query(*args, **options):
       sleep(900)
     finally:
       query(*args, **options)
+
+  return trough
