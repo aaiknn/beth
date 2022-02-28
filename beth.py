@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from avionics.environmentals import SenseOfTime
 from utils.trough.Trough import Troughs, Trough
 
 from src import args
@@ -7,10 +8,13 @@ from src.dns import collect
 from src.domainscan import scan
 from src.reverseip import reverse
 
+from modules.peek.whois import whoisQuery
 from modules.verify import email
 from modules.query.urlscan import query
 
 from src.globals import structures as st
+
+sot             = SenseOfTime()
 
 modules         = args.parse()
 module          = modules[0]
@@ -32,12 +36,14 @@ def the_most_important_function(jobs):
 
     try:
       if job == 'urlscan':
+        timestamp = sot.get_time()
 
         print(st['glorious_separation'])
         print(
           'module  :', module,
           '\njob     :', job,
-          '\ntarget  :', target
+          '\ntarget  :', target,
+          '\ndate    :', timestamp
         )
 
         if 'options' in vars(modules[1]):
@@ -62,12 +68,15 @@ def the_most_important_function(jobs):
 
       for target in jobs[job]:
         jobTrough   = Trough(f'{module}#{job}#{target}#')
+        timestamp   = sot.get_time()
 
         print(st['glorious_separation'])
         print(
-          'module :', module,
-          '\njob    :', job,
-          '\ntarget :', target)
+          'module  :', module,
+          '\njob     :', job,
+          '\ntarget  :', target,
+          '\ndate    :', timestamp
+        )
         print(st['glorious_separation'])
 
         if job == 'dns':
@@ -90,6 +99,11 @@ def the_most_important_function(jobs):
           end_graciously(jobTrough)
           break
 
+        elif job == 'whois':
+          whoisQuery(target)
+          end_graciously(jobTrough)
+          break
+
     except KeyboardInterrupt:
       end_graciously(jobTrough)
       break
@@ -98,5 +112,3 @@ the_most_important_function(jobs)
 
 if len(sessionTroughs.entries) > 0:
   sessionTroughs.persist()
-
-  print(st['glorious_separation'])

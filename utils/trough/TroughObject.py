@@ -14,6 +14,13 @@ class DomainTroughObject(TroughObject):
 
 class UrlscanResultTroughObject(TroughObject):
   def __init__(self, urlscanResult):
+    _dict     = urlscanResult
+    self.uuid = _dict['_id']
+
+    super().__init__(self.uuid, _dict)
+
+class UrlscanQueryResultTroughObject(UrlscanResultTroughObject):
+  def __init__(self, urlscanResult):
     _dict = urlscanResult
 
     self.uuid             = _dict['_id']
@@ -35,4 +42,4 @@ class UrlscanResultTroughObject(TroughObject):
     self.responseLocation = _dict['result']
     self.screenshot       = _dict['screenshot']
 
-    super().__init__(self.uuid, _dict)
+    super().__init__(_dict)

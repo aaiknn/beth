@@ -5,8 +5,9 @@ from os import environ as env
 from dotenv import load_dotenv
 from requests import get
 
+from avionics.environmentals import SenseOfTime
 from sessions.exceptions import AuthorisationException, QueryException, UnreachableException
-from utils.trough.TroughObject import UrlscanResultTroughObject as UsTO
+from utils.trough.TroughObject import UrlscanQueryResultTroughObject as UsTO
 
 from phrases import exceptions as e
 
@@ -16,12 +17,16 @@ US_USER           = env.get('API_KEY_URLSCAN')
 DEFAULT_AMOUNT    = env.get('DEFAULT_URLSCAN_QUERY_RESULTS_AMOUNT')
 DEFAULT_INTERVAL  = env.get('DEFAULT_URLSCAN_QUERY_INTERVAL')
 
+nav               = SenseOfTime()
+
 def make_pretty(response):
   _dict         = response.json()
   res_amount    = len(_dict['results'])
   max_amount    = _dict['total']
   i             = 1
+  _all          = []
 
+  nav.state_time()
   print(f'Total results: {max_amount}\nDisplaying {res_amount}.\n')
 
   for entry in _dict['results']:
@@ -43,26 +48,31 @@ def make_pretty(response):
       p_url           = entry['page']['url']
       p_status        = entry['page']['status']
 
-      print(f'  ASN {p_asn} ({p_asnn}): {p_ip}')
       print(f'  Effective URL: {p_url} ({p_status}) - {s_req_amount} requests')
 
-    if 'result' in r_keys:
-      r_result        = entry['result']
-      print(f'  Scan response location: {r_result}')
+      if fqdm not in _all:
+        print(f'  ASN {p_asn} ({p_asnn}): {p_ip}')
 
-    if 'screenshot' in r_keys:
-      r_screenshot    = entry['screenshot']
-      print(f'  Website screenshot location: {r_screenshot}')
+        if 'result' in r_keys:
+          r_result        = entry['result']
+          print(f'  Scan response location: {r_result}')
+
+        if 'screenshot' in r_keys:
+          r_screenshot    = entry['screenshot']
+        print(f'  Website screenshot location: {r_screenshot}')
 
     if 'tags' in t_keys:
       _tags     = entry['task']['tags']
       output    = ''
 
       for _tag in _tags:
-        output += _tag
+        output += f'\033[36m{_tag}\033[0m'
         output += ', '
 
       print(f'  Tags: {output[:-2]}')
+
+    if fqdm not in _all:
+      _all.append(fqdm)
 
     i = i+1
 
@@ -96,13 +106,14 @@ def save_unique_to_trough(response, trough):
 
     i = i+1
   
-  print(f'\n{len(_array)} unique domains.')
+  print(f'\n{len(_array)} unique domains:')
 
   for index in _positions:
     result  = _dict['results'][index]
-    to  = UsTO(result)
+    fqdm    = result['task']['domain']
+    to      = UsTO(result)
     trough.data.append(to)
-    print(result['task']['domain'])
+    print(f'  * {fqdm}')
 
 def query(trough, *args, **options):
   _options    = options.get('options')

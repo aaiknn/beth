@@ -35,6 +35,14 @@ peek.add_argument(
   required=False
 )
 
+peek.add_argument(
+  '--whois',
+  default=SUPPRESS,
+  help='Whois lookup of a target',
+  nargs=1,
+  required=False
+)
+
 query.add_argument(
   '--urlscan',
   default=SUPPRESS,

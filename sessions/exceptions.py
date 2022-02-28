@@ -31,14 +31,17 @@
 #     *-- Warning (BUILT-IN)
 #         |
 #         *-- RuntimeWarning (BUILT-IN)
+#         *-- BethWarning
 #         |   |
-#         |   *-- BethWarning
+#         |   *-- DatabaseWarning
+#         |   *-- ModuleWarning
 #         |       |
-#         |       *-- DatabaseWarning
-#         |       *-- ModuleWarning
-#         |           |
-#         |           *-- VerificationWarning
-#         |           *-- UnreachableWarning
+#         |       *-- QueryWarning
+#         |       |   |
+#         |       |   *- UnsuccessfulQueryWarning 
+#         |       |
+#         |       *-- VerificationWarning
+#         |       *-- UnreachableWarning
 #         |
 #         *-- SessionWarning
 #         *-- SituationWarning
@@ -74,3 +77,19 @@ class VerificationException(ModuleException):
 class EmailVerificationException(VerificationException):
   def __init__(self, exceptionMessage=''):
     super().__init__(exceptionMessage)
+
+class BethWarning(Warning):
+  def __init__(self, warningMessage=''):
+    super().__init__(warningMessage)
+
+class ModuleWarning(BethWarning):
+  def __init__(self, warningMessage=''):
+    super().__init__(warningMessage)
+
+class QueryWarning(ModuleWarning):
+  def __init__(self, warningMessage=''):
+    super().__init__(warningMessage)
+
+class UnsuccessfulQueryWarning(QueryWarning):
+  def __init__(self, warningMessage=''):
+    super().__init__(warningMessage)
