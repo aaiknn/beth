@@ -1,29 +1,37 @@
 #!/usr/bin/env python3
 
+# *- TroughObject
+#  |
+#  *- DomainTroughObject
+#  *- UrlscanResultTroughObject
+#  | |
+#  | *- UrlscanQueryResultTroughObject
+#  | *- UrlscanSubmissionResultTroughObject
+#  |
+#  *- WhoisXmlApiResultTroughObject
+
 class TroughObject():
   def __init__(self, identifier, data):
     self.identifier = identifier
     self.data       = data
 
 class DomainTroughObject(TroughObject):
-  def __init__(self, identifier):
+  def __init__(self, identifier, data):
     self.whois            = ''
     self.dnsRecords       = ''
 
-    super().__init__(identifier)
+    super().__init__(identifier, data)
 
 class UrlscanResultTroughObject(TroughObject):
   def __init__(self, urlscanResult):
-    _dict     = urlscanResult
-    self.uuid = _dict['_id']
+    _dict       = urlscanResult
+    identifier  = _dict['_id']
 
-    super().__init__(self.uuid, _dict)
+    super().__init__(identifier, _dict)
 
 class UrlscanQueryResultTroughObject(UrlscanResultTroughObject):
   def __init__(self, urlscanResult):
     _dict = urlscanResult
-
-    self.uuid             = _dict['_id']
 
     self.pageDomain       = _dict['page']['domain']
     self.pageUrl          = _dict['page']['url']
@@ -43,3 +51,11 @@ class UrlscanQueryResultTroughObject(UrlscanResultTroughObject):
     self.screenshot       = _dict['screenshot']
 
     super().__init__(_dict)
+
+class WhoisXmlApiResultTroughObject(TroughObject):
+  def __init__(self, whoisResult):
+    _dict = whoisResult
+
+    identifier = _dict[0]['domainName']
+
+    super().__init__(identifier, _dict)

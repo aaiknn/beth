@@ -23,6 +23,7 @@
 #     *-- SituationException
 #     |   |
 #     |   *-- AuthorisationException
+#     |   *-- NavigationException
 #     |
 #     *-- TypeError (BUILT-IN)
 #     |   |
@@ -38,7 +39,7 @@
 #         |       |
 #         |       *-- QueryWarning
 #         |       |   |
-#         |       |   *- UnsuccessfulQueryWarning 
+#         |       |   *-- UnsuccessfulQueryWarning
 #         |       |
 #         |       *-- VerificationWarning
 #         |       *-- UnreachableWarning
@@ -59,6 +60,10 @@ class SituationException(BethException):
     super().__init__(exceptionMessage)
 
 class AuthorisationException(SituationException):
+  def __init__(self, exceptionMessage=''):
+    super().__init__(exceptionMessage)
+
+class NavigationException(SituationException):
   def __init__(self, exceptionMessage=''):
     super().__init__(exceptionMessage)
 

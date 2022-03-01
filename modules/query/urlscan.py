@@ -81,8 +81,8 @@ def retrieve(*args):
 
   if len(args) == 1:
     size          = DEFAULT_AMOUNT
-  elif len(args) >= 1:
-    size          = str(args[1])
+  elif len(args) > 1:
+    size          = args[1]
 
   try:
     headers     = {'API-Key':str(US_USER),'Content-Type':'application/json'}
@@ -141,6 +141,6 @@ def query(trough, *args, **options):
     except:
       sleep(900)
     finally:
-      query(*args, **options)
+      query(trough, *args, **options)
 
   return trough

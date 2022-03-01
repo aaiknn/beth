@@ -89,9 +89,9 @@ def retrieve(target):
   return response
 
 
-def whoisQuery(target):
+def whoisQuery(trough, *args, **options):
   if W2_USER is not None:
-    result  = retrieve(target)
+    result  = retrieve(args[0])
     sc      = result.status_code
 
     if sc == 200:

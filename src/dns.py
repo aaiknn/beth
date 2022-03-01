@@ -41,8 +41,8 @@ def draw(records):
       for entry in records[result]:
         print(str(entry))
 
-def collect(target):
+def collect(trough, *args, **options):
   records       = Records()
 
-  pull(records, target)
+  pull(records, args[0])
   draw(records)

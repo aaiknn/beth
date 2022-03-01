@@ -116,15 +116,16 @@ def make_pretty(obj_list):
 
   return output
 
-def reverse(target):
+def reverse(trough, *args, **options):
   try:
-    ip_version = validate(target)
+    ip_version = validate(args[0])
+
   except:
     return
 
   if ST_USER is not None:
     try:
-      response = pull(ip_version, target)
+      response = pull(ip_version, args[0])
     except:
       return
 

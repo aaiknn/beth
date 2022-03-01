@@ -36,9 +36,9 @@ def scan_submission(target):
 
   return response
 
-def scan(target):
+def scan(trough, *args, **options):
   if US_USER is not None:
-    response  = scan_submission(target)
+    response  = scan_submission(args[0])
     sc        = response.status_code
 
     if sc == 200:
@@ -51,7 +51,7 @@ def scan(target):
     else:
       m       = response.json()
       result  = UsMessage(
-        target,
+        args[0],
         sc,
         m['message']
       )

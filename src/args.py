@@ -31,7 +31,7 @@ peek.add_argument(
   '--reverse',
   default=SUPPRESS,
   help='Reverse IP lookup of a target',
-  nargs=2,
+  nargs=1,
   required=False
 )
 
