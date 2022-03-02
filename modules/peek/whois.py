@@ -78,6 +78,15 @@ def make_pretty(response):
   res_message      += f'Record created  : {r_date_created}\n'
   res_message      += f'Record updated  : {r_date_updated}\n\n'
 
+  if 'registrant' in _keys:
+    r_registrant    = _dict['registrant']
+    r_r_keys        = r_registrant.keys()
+
+    res_message    += f'Registrant data :\n'
+
+    for r_r_key in r_r_keys:
+      res_message  += f'{r_r_key}: {r_registrant[r_r_key]}\n'
+
   print(res_message)
 
 def retrieve(target):
