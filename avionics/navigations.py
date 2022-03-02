@@ -32,9 +32,8 @@ class CoursePlotter():
 
     if _options is not None:
       print('options :', str(_options))
-      print(st['glorious_separation'])
-    else:
-      print(st['glorious_separation'])
+
+    print(st['glorious_separation'])
 
     try:
       trough = func(trough, *args, options=_options)

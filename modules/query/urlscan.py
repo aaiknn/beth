@@ -85,8 +85,12 @@ def retrieve(*args):
     size          = args[1]
 
   try:
-    headers     = {'API-Key':str(US_USER),'Content-Type':'application/json'}
+    headers       = {
+      'API-Key': str(US_USER),
+      'Content-Type': 'application/json'
+    }
     response    = get(f'https://urlscan.io/api/v1/search/?q={term}&size={size}',headers=headers)
+
   except Exception as f:
     raise UnreachableException(f'{e.query_urlscan_failed}: {f}')
 
@@ -116,19 +120,25 @@ def save_unique_to_trough(response, trough):
     print(f'  * {fqdm}')
 
 def query(trough, *args, **options):
-  _options    = options.get('options')
+  _options      = options.get('options')
 
   if US_USER is not None:
-    response  = retrieve(*args)
-    sc        = response.status_code
+    try:
+      response  = retrieve(*args)
+      sc        = response.status_code
 
-    if sc == 200:
-      make_pretty(response)
-      save_unique_to_trough(response, trough)
-    elif sc == 429:
-      raise QueryException(f'{e.query_urlscan_failed}: Urlscan rate limit reached.')
-    else:
-      raise QueryException(f'{e.query_urlscan_failed}: Status not OK, but {sc}.')
+      if sc == 200:
+        make_pretty(response)
+        save_unique_to_trough(response, trough)
+
+      elif sc == 429:
+        raise QueryException(f'{e.query_urlscan_failed}: Urlscan rate limit reached.')
+
+      else:
+        raise QueryException(f'{e.query_urlscan_failed}: Status not OK, but {sc}.')
+
+    except Exception as f:
+      raise f
 
   else:
     raise AuthorisationException(f'{e.query_urlscan_failed}: Urlscan API key missing.')

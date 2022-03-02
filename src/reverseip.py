@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 from ipaddress import ip_address
 from requests import post
 
+from sessions.exceptions import AuthorisationException
+
 load_dotenv()
 ST_USER   = env.get('API_KEY_SECURITY_TRAILS')
 
@@ -114,26 +116,32 @@ def make_pretty(obj_list):
   if len(obj_list) == 1:
     output += str(obj_list[0])
 
-  return output
+  print(output)
 
 def reverse(trough, *args, **options):
   try:
     ip_version = validate(args[0])
 
-  except:
-    return
+  except Exception as f:
+    raise f
 
   if ST_USER is not None:
     try:
       response = pull(ip_version, args[0])
-    except:
-      return
+
+    except Exception as f:
+      raise f
 
     try:
       result = clean_up(response.json())
-      output = make_pretty(result.reduced)
-      print(output)
+      make_pretty(result.reduced)
+
     except Exception as f:
       f_name = str(type(f).__name__)
       print(f_name, ':', f, '\n\n')
       print(str(response.text))
+
+  else:
+    raise AuthorisationException
+
+  return trough

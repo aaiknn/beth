@@ -24,6 +24,7 @@ def pull(records, target):
   for rtype in rTypes:
     try:
       response      = dns.resolver.query(target, rtype)
+
     except Exception as f:
       f_name = str(type(f).__name__)
       print(f_name, ':', f)
@@ -32,7 +33,7 @@ def pull(records, target):
     for part in response:
       records.add_item(rtype, part)
 
-def draw(records):
+def make_pretty(records):
   for result in vars(records):
     if len(records[result]) > 0:
       print('')
@@ -45,4 +46,6 @@ def collect(trough, *args, **options):
   records       = Records()
 
   pull(records, args[0])
-  draw(records)
+  make_pretty(records)
+
+  return trough

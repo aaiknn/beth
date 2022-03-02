@@ -92,6 +92,7 @@ def make_pretty(response):
 def retrieve(target):
   try:
     response = get(f'{endpoint}?apiKey={W2_USER}&domainName={target}&outputFormat=JSON')
+
   except Exception as f:
     raise QueryException(f'{e.query_whoisxmlapi_failed}: {f}.')
 
@@ -100,16 +101,23 @@ def retrieve(target):
 
 def whoisQuery(trough, *args, **options):
   if W2_USER is not None:
-    result  = retrieve(args[0])
-    sc      = result.status_code
+    try:
+      result  = retrieve(args[0])
+      sc      = result.status_code
 
-    if sc == 200:
-      try:
-        make_pretty(result)
-      except UnsuccessfulQueryWarning as f:
-        print(f)
-    else:
-      raise QueryException(f'{e.query_whoisxmlapi_failed}: Status not OK, but {sc}.')
+      if sc == 200:
+        try:
+          make_pretty(result)
+        except Exception as f:
+          raise f
+
+      else:
+        raise QueryException(f'{e.query_whoisxmlapi_failed}: Status not OK, but {sc}.')
+
+    except Exception as f:
+      raise f
 
   else:
     raise AuthorisationException(f'{e.query_whoisxmlapi_failed}: WhoisXMLAPI key missing.')
+
+  return trough

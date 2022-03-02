@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
 
+from os import environ as env
+from dotenv import load_dotenv
 from requests import get
 
-from sessions.exceptions import EmailVerificationException, UnreachableException
+from sessions.exceptions import AuthorisationException, EmailVerificationException, UnreachableException
 from phrases import exceptions as e
 
-email_check_url = 'https://emailrep.io/'
+load_dotenv()
+
+EREP_USER         = env.get('API_KEY_EMAILREP')
+email_check_url   = 'https://emailrep.io/'
 
 def colour_code(term, suspicion_status):
   if suspicion_status == True:
@@ -93,14 +98,33 @@ def make_pretty(response):
 
 def verify_email(*args, **options):
   url       = email_check_url + args[0]
+  agent     = 'BETH_FROM_ABOVE'
+  mime_t    = 'application/json'
+
   try:
-    response  = get(url)
+    if EREP_USER is not None:
+      headers   = {
+        'Key': str(EREP_USER),
+        'User-Agent': agent,
+        'Accept': mime_t
+      }
+
+    else:
+      headers   = {
+        'User-Agent': agent,
+        'Accept': mime_t
+      }
+
+    response  = get(url, headers=headers)
 
   except Exception as f:
     raise UnreachableException(f'{e.verify_email_failed}: {f}')
 
   if response.status_code == 200:
     return response
+
+  elif response.status_code == 401:
+    raise AuthorisationException(f'{e.verify_email_failed}: {response.text}')
 
   elif response.status_code == 429:
     raise EmailVerificationException(f'{e.verify_email_failed}: Emailrep.io rate limit reached.')
@@ -114,4 +138,6 @@ def verify(trough, *args, **options):
     make_pretty(response)
 
   except Exception as f:
-    print(f'{e.verify_email_failed}: {f}')
+    raise f
+
+  return trough
