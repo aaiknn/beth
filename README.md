@@ -1,34 +1,121 @@
 # BETH!
 A tool that supports people busting some bottoms.
 
+## Check
+Verify things.
+
+Alias: `-C`
+
+### Email
+Finds a verdict on the legitimacy of a given email address, and provides details on what grounds the verdict is decided.
+
+```sh
+check --email <EMAIL_ADDRESS>
+```
+
+Example:
+
+```sh
+beth check --email test@test.com
+```
+
 ## Lookup
 DNS data related lookup stuff.
+
 Alias: `-L`
 
 ### DNS
-`lookup --dns <DOMAINNAME>` retrieves DNS records for the name from your DNS server.
+Retrieves DNS records for the name from your DNS server.
 
-Example: `beth lookup --dns dontasktoask.com`
+```sh
+lookup --dns <DOMAINNAME>
+```
+
+Example:
+
+```sh
+beth lookup --dns dontasktoask.com
+```
 
 ### Reverse IP
 Note: This feature needs a SecurityTrails API key in order to work.
 
-`lookup --reverse <IP>`
+Note: Result output is currently capped after listing a max amount of 20 entries. While that isn't a great solution, it saves your terminal from certain spam for the time being. Reverse IP output is soon going to be more detailed, and options are going to be added to the command.
 
-Example: `beth lookup --reverse 135.181.208.158`
+```sh
+lookup --reverse <IP>
+```
+
+Example:
+
+```sh
+beth lookup --reverse 4.4.4.4
+```
+
+### Whois
+Retrieves Whois entries for a given domain.
+
+Note: This feature needs a WhoisXMLAPI API key in order to work.
+
+```sh
+lookup --whois <DOMAIN_NAME>
+```
+
+Example:
+
+```sh
+beth lookup --whois test.com
+```
+
+### Reverse Whois
+Retrieves current and historic domain name entries for a given target.
+
+Note: This feature needs a WhoisXMLAPI API key in order to work.
+
+Note: Result output is currently capped after listing a max amount of 50 entries. While that isn't a great solution, it saves your terminal from certain spam for the time being. There's going to be a more suitable solution in the near future where you can pick your own cap amount or choose to not cap it at all, similar to Urlscan querying. Promise.
+
+```sh
+lookup --rwhois <SEARCH_STRING> | <ARRAY_OF_SEARCH_STRINGS>
+```
+
+Default is querying current records.
+
+Example:
+
+```sh
+beth lookup --rwhois test@test.com
+```
+
+#### Options
+```sh
+-H      Historic search
+```
+
+Example:
+
+```sh
+beth lookup --rwhois test@test.com -H
+```
 
 ## Query
 Ask around the internet for advice.
 Alias: `-Q`
 
 ### Urlscan
+Finds scan result entries on Urlscan.
 Note: This feature needs a urlscan.io API key in order to work.
 
-`query --urlscan <QUERY_STRING> [RESULTS_AMOUNT]` finds entries on Urlscan.
+```sh
+query --urlscan <QUERY_STRING> [RESULTS_AMOUNT]
+```
 
 For information on query string formatting, see [Urlscan Search API Docs](https://urlscan.io/docs/search/).
 
-Example: `beth query --urlscan page.domain:dontasktoask.com`
+Example:
+
+```sh
+beth query --urlscan page.domain:dontasktoask.com
+```
 
 Note: A default value of the amount of results that are retrieved can be set in your .env file.
 
@@ -44,8 +131,15 @@ More in-depth investigation.
 Alias: `-I`
 
 ### Scan
+Retrieves information on the target webpage from urlscan.io.
 Note: This feature needs a urlscan.io API key in order to work.
 
-`investigate --scan <URL>` retrieves information on the target webpage from urlscan.io.
+```sh
+investigate --scan <URL>
+```
 
-Example: `beth investigate --scan http://www.catb.org/~esr/faqs/smart-questions.html`
+Example:
+
+```sh
+beth investigate --scan http://www.catb.org/~esr/faqs/smart-questions.html
+```

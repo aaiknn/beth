@@ -8,6 +8,8 @@ from requests import post
 from sessions.exceptions import AuthorisationException
 from utils.renderers.UrlscanResponse import UsMessage, UsResponse
 
+from phrases import exceptions as e
+
 load_dotenv()
 US_USER   = env.get('API_KEY_URLSCAN')
 
@@ -62,6 +64,6 @@ def scan(trough, *args, **options):
       print(f'Response code {result.result}: {result.message} ({result.url}).')
 
   else:
-    raise AuthorisationException(f'')
+    raise AuthorisationException(f'{e.query_urlscan_failed}: Urlscan API key is missing.')
 
   return trough

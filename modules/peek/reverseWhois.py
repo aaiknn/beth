@@ -23,9 +23,16 @@ def make_pretty(target, response):
 
   if amount > 0:
     output               += f'WhoisXMLApi found {str(amount)} domain results:\n\n'
+    i                     = 0
 
     for entry in _dict['domainsList']:
+      i                   = i+1
       output             += f'  * {entry}\n'
+
+      if i == 50:
+        output           += f'\n Skipped output of {amount - i} other entries.'
+        break
+
   else:
     output               += f'WhoisXMLApi found no domain results for {target}.'
 
@@ -34,11 +41,22 @@ def make_pretty(target, response):
 
   print(output)
 
-def retrieve(target):
+def retrieve(target, **options):
   timestamp   = ''
+  _options    = options.get('options')
+
+  if _options is None:
+    searchType = 'current'
+
+  elif _options == 'HISTORIC':
+    searchType = 'historic'
+
+  else:
+    searchType = 'current'
+
   data        = {
     'apiKey': W2_USER,
-    'searchType': 'historic',
+    'searchType': searchType,
     'mode': 'purchase',
     'punycode': True,
     'searchAfter': timestamp,
@@ -64,7 +82,7 @@ def whoisQuery(trough, *args, **options):
 
   if W2_USER is not None:
     try:
-      result  = retrieve(target)
+      result  = retrieve(target, **options)
       sc      = result.status_code
 
       if sc == 200:

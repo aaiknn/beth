@@ -51,6 +51,16 @@ peek.add_argument(
   required=False
 )
 
+peek.add_argument(
+  '-H',
+  default=SUPPRESS,
+  help='Historic lookup (if available)',
+  action='store_const',
+  const='HISTORIC',
+  dest='options',
+  required=False
+)
+
 query.add_argument(
   '--urlscan',
   default=SUPPRESS,
