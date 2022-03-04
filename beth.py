@@ -20,6 +20,13 @@ modules         = args.parse()
 module          = modules[0]
 jobs            = vars(modules[1])
 
+if 'options' in vars(modules[1]):
+  options       = modules[1].options
+  del jobs['options']
+
+else:
+  options       = None
+
 sessionTroughs  = Troughs()
 
 def the_most_important_function(jobs):
@@ -34,11 +41,6 @@ def the_most_important_function(jobs):
       'urlscan' : query,
       'whois'   : whoisQuery
     }
-
-    if 'options' in vars(modules[1]):
-      options   = modules[1].options
-    else:
-      options   = None
 
     try:
       for target in jobs[job]:
