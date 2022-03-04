@@ -43,6 +43,14 @@ peek.add_argument(
   required=False
 )
 
+peek.add_argument(
+  '--rwhois',
+  default=SUPPRESS,
+  help='Reverse whois lookup of a target',
+  nargs=1,
+  required=False
+)
+
 query.add_argument(
   '--urlscan',
   default=SUPPRESS,

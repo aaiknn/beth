@@ -9,6 +9,7 @@ from src.dns import collect
 from src.domainscan import scan
 from src.reverseip import reverse
 
+from modules.peek.reverseWhois import whoisQuery as reverseWhois
 from modules.peek.whois import whoisQuery
 from modules.verify import email
 from modules.query.urlscan import query
@@ -105,6 +106,18 @@ def the_most_important_function(jobs):
             module,
             job,
             whoisQuery,
+            *args,
+            sessionTroughs=sessionTroughs,
+            trough=jobTrough,
+            options=options
+          )
+          break
+
+        elif job == 'rwhois':
+          CoursePlotter(
+            module,
+            job,
+            reverseWhois,
             *args,
             sessionTroughs=sessionTroughs,
             trough=jobTrough,

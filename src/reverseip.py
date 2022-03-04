@@ -2,15 +2,16 @@
 
 from os import environ as env
 from dotenv import load_dotenv
-
 from ipaddress import ip_address
 from requests import post
 
 from sessions.exceptions import AuthorisationException
 
-load_dotenv()
-ST_USER   = env.get('API_KEY_SECURITY_TRAILS')
+from phrases import exceptions as e
 
+load_dotenv()
+
+ST_USER   = env.get('API_KEY_SECURITY_TRAILS')
 _dict     = None
 
 class StRecord:
@@ -25,16 +26,17 @@ class StRecord:
 
 class StResponse:
   def __init__(self, response):
-    self.obj  = response
-    self.reduced  = []
+    self.obj            = response
+    self.reduced        = []
 
     if self.obj['records']:
       try:
-        self.records  = self.obj['records']
-        self.amount   = self.obj['record_count']
-        self.meta     = self.obj['meta']
-      except:
-        pass
+        self.records    = self.obj['records']
+        self.amount     = self.obj['record_count']
+        self.meta       = self.obj['meta']
+
+      except Exception as f:
+        raise f
 
       for record in self.records:
         entry = StRecord(
@@ -55,24 +57,27 @@ class StResponse:
 def validate(target):
   try:
     ip_type = ip_address(target)
+
   except Exception as f:
     f_name = str(type(f).__name__)
     print(f_name, ':', f)
     raise f
+
   else:
     return ip_type.version
 
 def pull(ip_version, target):
-  endpoint  = 'https://api.securitytrails.com/v1/domains/list?include_ips=false&page=1&scroll=false'
-  headers   = {
+  endpoint    = 'https://api.securitytrails.com/v1/domains/list?include_ips=false&page=1&scroll=false'
+  headers     = {
     "Content-Type": "application/json",
     "APIKEY": str(ST_USER)
   }
-  filter    = "ipv" + str(ip_version)
-  data      = {"filter": {filter: target}}
+  filter      = "ipv" + str(ip_version)
+  data        = {"filter": {filter: target}}
 
   try:
     response  = post(endpoint, json=data, headers=headers)
+
   except Exception as f:
     f_name = str(type(f).__name__)
     print(f_name, ':', f)
@@ -85,36 +90,40 @@ def clean_up(response):
   return result
 
 def make_pretty(obj_list):
-  i       = 0
-  output  = ""
+  i             = 0
+  output        = ""
 
   for entry in obj_list:
-    i = i+1
+    i           = i+1
 
     if entry.hostname is not None:
-      output += "\n\n"
-      output += str(i)
-      output += ".\nHost name: "
-      output += entry.hostname
+      output   += "\n\n"
+      output   += str(i)
+      output   += ".\nHost name: "
+      output   += entry.hostname
 
     if entry.host_provider is not None:
-      output += "\n"
-      output += "Host providers: "
+      output   += "\n"
+      output   += "Host providers: "
 
       for item in entry.host_provider:
         output += str(item)
         output += ", "
 
     if entry.mail_provider is not None:
-      output += "\n"
-      output += "Mail providers: "
+      output   += "\n"
+      output   += "Mail providers: "
 
       for item in entry.mail_provider:
         output += str(item)
         output += ", "
-    
+
+    if i == 20 and len(obj_list) > 20:
+      output   += f'\n\nSkipped output of {len(obj_list) - i} other items.'
+      break
+
   if len(obj_list) == 1:
-    output += str(obj_list[0])
+    output     += str(obj_list[0])
 
   print(output)
 
@@ -142,6 +151,6 @@ def reverse(trough, *args, **options):
       print(str(response.text))
 
   else:
-    raise AuthorisationException
+    raise AuthorisationException(f'{e.reverseip_securitytrails_failed}: SecurityTrails API key missing.')
 
   return trough

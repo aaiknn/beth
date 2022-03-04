@@ -108,8 +108,15 @@ def whoisQuery(trough, *args, **options):
       if sc == 200:
         try:
           make_pretty(result)
+
+        except UnsuccessfulQueryWarning as f:
+          print(f)
+
         except Exception as f:
           raise f
+
+      elif sc == 401:
+        print(result.text, result.status_code)
 
       else:
         raise QueryException(f'{e.query_whoisxmlapi_failed}: Status not OK, but {sc}.')
