@@ -7,7 +7,7 @@ Verify things.
 Alias: `-C`
 
 ### Email
-Finds a verdict on the legitimacy of a given email address, and provides details on what grounds the verdict is decided.
+Finds a verdict on the legitimacy of a given email address, and provides details about on what grounds the verdict is decided.
 
 ```sh
 check --email <EMAIL_ADDRESS>
