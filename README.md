@@ -49,7 +49,7 @@ lookup --reverse <IP>
 Example:
 
 ```sh
-beth lookup --reverse 4.4.4.4
+beth lookup --reverse 8.8.8.8
 ```
 
 ### Whois
@@ -132,6 +132,7 @@ Alias: `-I`
 
 ### Scan
 Retrieves information on the target webpage from urlscan.io.
+
 Note: This feature needs a urlscan.io API key in order to work.
 
 ```sh
@@ -142,4 +143,24 @@ Example:
 
 ```sh
 beth investigate --scan http://www.catb.org/~esr/faqs/smart-questions.html
+```
+
+### Shodan
+Retrieves information on the target IP from Shodan.
+
+```sh
+investigate --shodan <IP>
+```
+
+Example:
+
+```sh
+beth investigate --shodan 4.4.4.4
+```
+
+## HTTP Utilities
+### Test: Is it up?
+
+```sh
+test --up <URL> | <FILE_OF_LINE_SEPARATED_URLS>
 ```

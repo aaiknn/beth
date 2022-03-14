@@ -7,7 +7,6 @@ from requests import get
 
 from avionics.environmentals import SenseOfTime
 from sessions.exceptions import AuthorisationException, QueryException, UnreachableException
-from utils.trough.TroughObject import UrlscanQueryResultTroughObject as UsTO
 
 from phrases import exceptions as e
 
@@ -76,6 +75,11 @@ def make_pretty(response):
 
     i = i+1
 
+  if len(_all) > 0:
+    print(f'\nFound {len(_all)} unique domain names:\n')
+    for entry in _all:
+      print(f'  * {entry}')
+
 def retrieve(*args):
   term            = args[0]
 
@@ -96,29 +100,6 @@ def retrieve(*args):
 
   return response
 
-def save_unique_to_trough(response, trough):
-  _dict       = response.json()
-  _array      = []
-  _positions  = []
-
-  i = 0
-
-  for entry in _dict['results']:
-    if entry['page']['domain'] not in _array:
-      _positions.append(i)
-      _array.append(entry['page']['domain'])
-
-    i = i+1
-  
-  print(f'\n{len(_array)} unique domains:')
-
-  for index in _positions:
-    result  = _dict['results'][index]
-    fqdm    = result['task']['domain']
-    to      = UsTO(result)
-    trough.data.append(to)
-    print(f'  * {fqdm}')
-
 def query(trough, *args, **options):
   _options      = options.get('options')
 
@@ -129,7 +110,6 @@ def query(trough, *args, **options):
 
       if sc == 200:
         make_pretty(response)
-        save_unique_to_trough(response, trough)
 
       elif sc == 429:
         raise QueryException(f'{e.query_urlscan_failed}: Urlscan rate limit reached.')

@@ -15,6 +15,7 @@ subparsers  = parser.add_subparsers(
 verify    = subparsers.add_parser('check', aliases=['-C'])
 query     = subparsers.add_parser('query', aliases=['-Q'])
 stare     = subparsers.add_parser('investigate', aliases=['-I'])
+test      = subparsers.add_parser('test', aliases=['-T'])
 peek      = subparsers.add_parser('lookup', aliases=['-L'])
 record    = subparsers.add_parser('record', aliases=['-S'])
 
@@ -84,6 +85,31 @@ stare.add_argument(
   '--scan',
   default=SUPPRESS,
   help='Urlscan.io querying of a target',
+  nargs=1,
+  required=False
+)
+
+stare.add_argument(
+  '--shodan',
+  default=SUPPRESS,
+  help='Shodan querying of a target',
+  nargs=1,
+  required=False
+)
+
+# TEST PARSER
+test.add_argument(
+  '--status',
+  default=SUPPRESS,
+  help='Test for URL HTTP response status',
+  nargs=1,
+  required=False
+)
+
+test.add_argument(
+  '--up',
+  default=SUPPRESS,
+  help='Test for URL HTTP response',
   nargs=1,
   required=False
 )

@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 
-class Troughs():
-  def __init__(self):
-    self.entries = []
-
-  def persist(self):
-    for entry in self.entries:
-      with open(f'trough/{entry.identifier}', 'w') as file:
-        file.write(str(entry.data))
-
 class Trough():
-  def __init__(self, identifier):
-    self.identifier = identifier
-    self.data = []
+  def __init__(self, identifier, *args, **options):
+    self.identifier   = identifier
+    self.meta         = ''
+    self.description  = ''
+    self.entries      = []
+    self.parent       = options.get('sessionTrough')
+
+    if len(args) > 0:
+      self.meta         = args[0]
+      self.description  = args[1]
+      self.entries      = args[2]
+
+  def record_results(self):
+    self.parent.entries.append(self)

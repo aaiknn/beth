@@ -29,8 +29,6 @@ def make_pretty(response):
       r_w_server    = _dict['registryData']['whoisServer']
 
   if w_code == 0:
-    ext_message     = _dict['registryData']['rawText']
-
     eff             = f'{e.query_whoisxmlapi_unsucessful} for {fqdm}\n'
 
     if 'dataError' in _keys:
@@ -42,47 +40,63 @@ def make_pretty(response):
     if 'registrarName' in _keys and r_w_server != 'NOT STATED':
       eff          += f'\nResponsible whois server: {r_w_server}\n'
 
-    if ext_message is not None:
+    if 'rawText' in _dict['registryData'].keys():
+      ext_message     = _dict['registryData']['rawText']
       eff          += f'\n{ext_message}\n'
 
     raise UnsuccessfulQueryWarning(eff)
 
-  tld               = _dict['domainNameExt']
+  tld                 = _dict['domainNameExt']
+  w_c_date            = _dict['audit']['createdDate']
+  w_u_date            = _dict['audit']['updatedDate']
 
-  w_c_date          = _dict['audit']['createdDate']
-  w_u_date          = _dict['audit']['updatedDate']
+  if 'estimatedDomainAge' in _keys:
+    e_age             = _dict['estimatedDomainAge']
 
-  e_age             = _dict['estimatedDomainAge']
+  r_name              = _dict['registrarName']
 
-  r_name            = _dict['registrarName']
-  r_status          = _dict['registryData']['status']
-  r_code            = _dict['registryData']['parseCode']
-  r_date_created    = _dict['registryData']['createdDateNormalized']
-  r_date_expires    = _dict['registryData']['expiresDateNormalized']
-  r_date_updated    = _dict['registryData']['updatedDateNormalized']
-  r_ns              = _dict['registryData']['nameServers']['hostNames']
+  res_message         = ''
+  res_message        += f'Registrar       : {r_name}\n'
 
-  res_message       = ''
-  res_message      += f'Registrar       : {r_name}\n'
-  res_message      += f'Status          : {r_status}\n'
-  res_message      += f'Parse code      : {r_code}\n\n'
+  if 'registryData' in _keys:
+    r_data            = _dict['registryData']
+    _r_keys           = r_data.keys()
 
-  if len(r_ns) >= 1:
-    res_message    += f'Nameservers     :\n'
+    if 'status' in _r_keys:
+      r_status        = r_data['status']
+      res_message    += f'Status          : {r_status}\n'
 
-    for entry in r_ns:
-      res_message  += f'  * {entry}\n'
+    r_code            = r_data['parseCode']
+    res_message      += f'Parse code      : {r_code}\n'
 
-  res_message      += f'\nImportant dates :\n'
-  res_message      += f'Record expires  : {r_date_expires}\n'
-  res_message      += f'Record created  : {r_date_created}\n'
-  res_message      += f'Record updated  : {r_date_updated}\n\n'
+    if 'createdDateNormalized' in _r_keys or 'expiresDateNormalized' in _r_keys or 'updatedDateNormalized' in _r_keys:
+      res_message    += f'\nImportant dates :\n'
+
+    if 'createdDateNormalized' in _r_keys:
+      r_date_created  = r_data['createdDateNormalized']
+      res_message    += f'Record created  : {r_date_created}\n'
+
+    if 'expiresDateNormalized' in _r_keys:
+      r_date_expires  = r_data['expiresDateNormalized']
+      res_message    += f'Record expires  : {r_date_expires}\n'
+
+    if 'updatedDateNormalized' in _r_keys:
+      r_date_updated  = r_data['updatedDateNormalized']
+      res_message    += f'Record updated  : {r_date_updated}\n'
+
+    r_ns              = r_data['nameServers']['hostNames']
+
+    if len(r_ns) >= 1:
+      res_message    += f'\nNameservers     :\n'
+
+      for entry in r_ns:
+        res_message  += f'  * {entry}\n'
 
   if 'registrant' in _keys:
     r_registrant    = _dict['registrant']
     r_r_keys        = r_registrant.keys()
 
-    res_message    += f'Registrant data :\n'
+    res_message    += f'\nRegistrant data :\n'
 
     for r_r_key in r_r_keys:
       res_message  += f'{r_r_key}: {r_registrant[r_r_key]}\n'

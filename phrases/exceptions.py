@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+query_shodan_failed                     = 'Unable to query Shodan'
 query_urlscan_failed                    = 'Unable to query Urlscan'
 query_whoisxmlapi_failed                = 'Unable to query WhoisXMLAPI'
 

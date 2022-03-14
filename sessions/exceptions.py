@@ -51,6 +51,10 @@ class BethException(Exception):
   def __init__(self, exceptionMessage=''):
     super().__init__(exceptionMessage)
 
+class SessionException(Exception):
+  def __init__(self, exceptionMessage=''):
+    super().__init__(exceptionMessage)
+
 class ModuleException(BethException):
   def __init__(self, exceptionMessage=''):
     super().__init__(exceptionMessage)
@@ -84,6 +88,10 @@ class EmailVerificationException(VerificationException):
     super().__init__(exceptionMessage)
 
 class BethWarning(Warning):
+  def __init__(self, warningMessage=''):
+    super().__init__(warningMessage)
+
+class SessionWarning(Warning):
   def __init__(self, warningMessage=''):
     super().__init__(warningMessage)
 

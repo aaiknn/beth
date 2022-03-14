@@ -12,8 +12,7 @@ from phrases import exceptions as e
 load_dotenv()
 
 W2_USER           = env.get('API_KEY_WHOISXML')
-
-endpoint  = 'https://reverse-whois.whoisxmlapi.com/api/v2'
+endpoint          = 'https://reverse-whois.whoisxmlapi.com/api/v2'
 
 def make_pretty(target, response):
   _dict                   = response.json()
@@ -30,7 +29,7 @@ def make_pretty(target, response):
       output             += f'  * {entry}\n'
 
       if i == 50:
-        output           += f'\n Skipped output of {amount - i} other entries.'
+        output           += f'\n Skipped output of {amount - i} other entries.\n'
         break
 
   else:
@@ -42,19 +41,19 @@ def make_pretty(target, response):
   print(output)
 
 def retrieve(target, **options):
-  timestamp   = ''
-  _options    = options.get('options')
+  timestamp     = ''
+  _options      = options.get('options')
 
   if _options is None:
-    searchType = 'current'
+    searchType  = 'current'
 
   elif _options == 'HISTORIC':
-    searchType = 'historic'
+    searchType  = 'historic'
 
   else:
-    searchType = 'current'
+    searchType  = 'current'
 
-  data        = {
+  data          = {
     'apiKey': W2_USER,
     'searchType': searchType,
     'mode': 'purchase',
@@ -67,10 +66,10 @@ def retrieve(target, **options):
       'exclude': []
     }
   }
-  data        = dumps(data)
+  data          = dumps(data)
 
   try:
-    response = post(endpoint, data=data)
+    response    = post(endpoint, data=data)
 
   except Exception as f:
     raise QueryException(f'{e.query_whoisxmlapi_failed}: {f}.')

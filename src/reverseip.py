@@ -89,6 +89,24 @@ def clean_up(response):
   result = StResponse(response)
   return result
 
+def make_half_pretty(response):
+  _dict         = response.json()
+  i             = 0
+  amount        = _dict['record_count']
+
+  if amount == 0:
+    print('No records found.')
+
+  else:
+    for entry in _dict['records']:
+      hostname    = entry['hostname']
+      print(f'  * \033[33m{hostname}\033[0m')
+      i           = i+1
+
+      if i == 12 and i < amount:
+        print(f'Aborting. Skipping {amount - i} other items.')
+        break
+
 def make_pretty(obj_list):
   i             = 0
   output        = ""
@@ -141,14 +159,20 @@ def reverse(trough, *args, **options):
     except Exception as f:
       raise f
 
-    try:
-      result = clean_up(response.json())
-      make_pretty(result.reduced)
+    if response.status_code == 200:
+      try:
+        make_half_pretty(response)
 
-    except Exception as f:
-      f_name = str(type(f).__name__)
-      print(f_name, ':', f, '\n\n')
-      print(str(response.text))
+      except Exception as f:
+        f_name = str(type(f).__name__)
+        print(f_name, ':', f, '\n\n')
+        print(str(response.text))
+
+    elif response.status_code == 429:
+      print('Rate limit reached.')
+
+    else:
+      print(response.status_code, response.text)
 
   else:
     raise AuthorisationException(f'{e.reverseip_securitytrails_failed}: SecurityTrails API key missing.')
