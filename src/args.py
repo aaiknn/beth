@@ -114,6 +114,16 @@ test.add_argument(
   required=False
 )
 
+test.add_argument(
+  '-F',
+  default=SUPPRESS,
+  help='Run tests against bulk data in a specified file',
+  action='store_const',
+  const='BULK_FILE',
+  dest='options',
+  required=False
+)
+
 # VERIFY PARSER
 verify.add_argument(
   '--email',

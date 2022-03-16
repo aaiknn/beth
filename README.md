@@ -159,8 +159,50 @@ beth investigate --shodan 4.4.4.4
 ```
 
 ## HTTP Utilities
-### Test: Is it up?
+### Test: Is a domain up?
 
 ```sh
-test --up <URL> | <FILE_OF_LINE_SEPARATED_URLS>
+test --up <URL>
+```
+
+Example:
+
+```sh
+beth test --up dontasktoask.com
+```
+
+#### Options
+```sh
+-F      Instead of using one domain name from the command-line, read input from a file of domain names
+        that are separated by new lines.
+```
+
+Example:
+
+```sh
+beth test --up myfilename.txt -F
+```
+
+### Test: What's the response status from a request to a domain?
+
+```sh
+test --status <URL>
+```
+
+#### Options
+```sh
+-F      Instead of using one domain name from the command-line, read input from a file of domain names
+        that are separated by new lines.
+```
+
+Example:
+
+```sh
+beth test --status dontasktoask.com
+```
+
+Example:
+
+```sh
+beth test --status myfilename.txt -F
 ```
