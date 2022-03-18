@@ -91,6 +91,10 @@ class BethWarning(Warning):
   def __init__(self, warningMessage=''):
     super().__init__(warningMessage)
 
+class NoTargetWarning(BethWarning):
+  def __init__(self, warningMessage=''):
+    super().__init__(warningMessage)
+
 class SessionWarning(Warning):
   def __init__(self, warningMessage=''):
     super().__init__(warningMessage)
