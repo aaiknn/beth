@@ -35,7 +35,8 @@ def handleResponse(target, response):
     '503' : 'Service unavailable.',
     '521' : 'Web server is down.',
     '522' : 'Connection timed out.',
-    '523' : 'Origin is unreachable.'
+    '523' : 'Origin is unreachable.',
+    '526' : 'Invalid SSL certificate. (And possibly for a reason.)'
   }
 
   if sc in response_map.keys():
@@ -81,10 +82,15 @@ def sendRequest(url):
 
   return response
 
-def identifyTarget(target):
-  if len(target) == 0:
+def sanitiseLine(line):
+  if len(line) == 0:
+    raise NoTargetWarning()
+  elif line.startswith('#') or line.startswith('//'):
     raise NoTargetWarning()
 
+  return line
+
+def identifyTarget(target):
   target            = target.split('//')
 
   if len(target) > 1:
@@ -126,6 +132,7 @@ def is_it_up(trough, *args, **options):
   else:
     for member in _data:
       try:
+        member    = sanitiseLine(member)
         target    = identifyTarget(member)
         response  = sendRequest(target)
       except ConnectionError as f:
@@ -159,6 +166,7 @@ def whats_the_status(trough, *args, **options):
   else:
     for member in _data:
       try:
+        member    = sanitiseLine(member)
         target    = identifyTarget(member)
         response  = sendRequest(target)
       except ConnectionError as f:
