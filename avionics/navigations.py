@@ -5,6 +5,19 @@ from sessions.exceptions import NavigationException
 
 from src.globals import structures as st
 
+jobNames = {
+  'dns'     : 'DNS',
+  'email'   : 'Email Address',
+  'reverse' : 'Reverse IP',
+  'rwhois'  : 'Reverse Whois',
+  'scan'    : 'Urlscan Site Scan',
+  'shodan'  : 'Shodan',
+  'status'  : 'HTTP Response Status',
+  'up'      : 'HTTP Response Up',
+  'urlscan' : 'Urlscan Search',
+  'whois'   : 'Whois'
+}
+
 class CoursePlotter():
   def __init__(self, module, job, func, *args, **options):
     self.plot(module, job, func, *args, **options)
@@ -25,7 +38,7 @@ class CoursePlotter():
     print(st['glorious_separation'])
     print(
       'module  :', module,
-      '\njob     :', job,
+      '\njob     :', jobNames[job],
       '\ntarget  :', target,
       '\ndate    :', timestamp
     )
