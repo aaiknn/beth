@@ -40,6 +40,17 @@ def make_pretty(target, response):
 
   print(output)
 
+def clean_list(_list):
+  l = len(_list)
+  cleaned_list = []
+
+  for i in range(l):
+    member      = _list[i-1]
+    member      = member.strip(' ')
+    cleaned_list.insert(i-1, member)
+
+  return cleaned_list
+
 def retrieve(target, **options):
   timestamp     = ''
   _options      = options.get('options')
@@ -53,6 +64,54 @@ def retrieve(target, **options):
   else:
     searchType  = 'current'
 
+  targets       = target.strip('\'" ')
+  targets       = targets.split('NOT')
+  wanted        = targets.pop(0)
+  unwanted      = targets
+  wanted        = wanted.split('AND')
+
+  if unwanted is None:
+    unwanted    = []
+
+  unwanted      = clean_list(unwanted)
+  wanted        = clean_list(wanted)
+
+  n_excludes    = []
+  n_includes    = []
+  max_amount    = 4
+
+  i = max_amount
+
+  if len(unwanted) > i:
+    excludes    = unwanted[:i]
+
+    for item in excludes:
+      unwanted.remove(item)
+
+    n_excludes  = unwanted
+
+  elif len(unwanted) == 0:
+    excludes    = []
+  else:
+    excludes    = unwanted
+
+  if len(wanted) > i:
+    includes    = wanted[:i]
+
+    for item in includes:
+      wanted.remove(item)
+
+    n_includes  = wanted
+
+  else:
+    includes    = wanted
+
+  print(f'Included terms: {str(includes)}\nExcluded terms: {str(excludes)}')
+  if len(n_includes) > 0:
+    print(f'Max of {max_amount} terms exceeded. Dropped terms from inclusion: {str(n_includes)}')
+  if len(n_excludes) > 0:
+    print(f'Max of {max_amount} exclusion terms exceeded. Dropped terms from exclusion: {str(n_excludes)}')
+
   data          = {
     'apiKey': W2_USER,
     'searchType': searchType,
@@ -60,10 +119,8 @@ def retrieve(target, **options):
     'punycode': True,
     'searchAfter': timestamp,
     'basicSearchTerms': {
-      'include': [
-        target
-      ],
-      'exclude': []
+      'include': includes,
+      'exclude': excludes
     }
   }
   data          = dumps(data)

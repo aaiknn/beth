@@ -10,6 +10,7 @@ from phrases import exceptions as e
 load_dotenv()
 
 EREP_USER         = env.get('API_KEY_EMAILREP')
+USER_AGENT        = env.get('DEFAULT_USER_AGENT')
 email_check_url   = 'https://emailrep.io/'
 
 def colour_code(term, suspicion_status):
@@ -98,20 +99,24 @@ def make_pretty(response):
 
 def verify_email(*args, **options):
   url       = email_check_url + args[0]
-  agent     = 'BETH_FROM_ABOVE'
   mime_t    = 'application/json'
+
+  if USER_AGENT is None:
+    AGENT           = 'BETH_FROM_ABOVE'
+  else:
+    AGENT           = USER_AGENT
 
   try:
     if EREP_USER is not None:
       headers   = {
         'Key': str(EREP_USER),
-        'User-Agent': agent,
+        'User-Agent': AGENT,
         'Accept': mime_t
       }
 
     else:
       headers   = {
-        'User-Agent': agent,
+        'User-Agent': AGENT,
         'Accept': mime_t
       }
 

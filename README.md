@@ -75,7 +75,7 @@ Note: This feature needs a WhoisXMLAPI API key in order to work.
 Note: Result output is currently capped after listing a max amount of 50 entries. While that isn't a great solution, it saves your terminal from certain spam for the time being. There's going to be a more suitable solution in the near future where you can pick your own cap amount or choose to not cap it at all, similar to Urlscan querying. Promise.
 
 ```sh
-lookup --rwhois <SEARCH_STRING> | <ARRAY_OF_SEARCH_STRINGS>
+lookup --rwhois <SEARCH_TERM>
 ```
 
 Default is querying current records.
@@ -95,6 +95,15 @@ Example:
 
 ```sh
 beth lookup --rwhois test@test.com -H
+```
+
+#### Search Operators
+Searches can be combined using AND.
+Terms can be excluded from results using NOT.
+
+Example:
+```sh
+beth lookup --rwhois "things AND stuff AND everything NOT desperation NOT exhaustion"
 ```
 
 ## Query
@@ -173,8 +182,8 @@ beth test --up dontasktoask.com
 
 #### Options
 ```sh
--F      Instead of using one domain name from the command-line, read input from a file of domain names
-        that are separated by new lines.
+-F      Instead of using one domain name from the command-line, read input from
+        a file of domain names that are separated by new lines.
 ```
 
 Example:
@@ -191,8 +200,8 @@ test --status <URL>
 
 #### Options
 ```sh
--F      Instead of using one domain name from the command-line, read input from a file of domain names
-        that are separated by new lines.
+-F      Instead of using one domain name from the command-line, read input from
+        a file of domain names that are separated by new lines.
 ```
 
 Example:
