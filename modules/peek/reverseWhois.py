@@ -56,7 +56,7 @@ def retrieve(target, **options):
   _options      = options.get('options')
   searchType    = 'current'
 
-  if 'HISTORIC' in _options:
+  if 'constants' in _options.keys() and 'HISTORIC' in _options['constants']:
     searchType  = 'historic'
 
   targets       = target.strip('\'" ')
@@ -106,7 +106,6 @@ def retrieve(target, **options):
     print(f'Max of {max_amount} terms exceeded. Dropped terms from inclusion: {str(n_includes)}')
   if len(n_excludes) > 0:
     print(f'Max of {max_amount} exclusion terms exceeded. Dropped terms from exclusion: {str(n_excludes)}')
-  print(st['glorious_separation'])
 
   data          = {
     'apiKey'      : W2_USER,
@@ -119,6 +118,34 @@ def retrieve(target, **options):
       'exclude'   : excludes
     }
   }
+
+  if 'prepositions' in _options.keys():
+    prepos_options  = _options['prepositions']
+
+    for key in prepos_options:
+      prepos_key    = key
+      prepos_value  = prepos_options[key]
+
+    if prepos_key == 'before' or prepos_key == 'after':
+      _map = {
+        'before' : 'createdDateTo',
+        'after'  : 'createdDateFrom'
+      }
+      _dict = { _map[prepos_key] : prepos_value[0] }
+      data.update(_dict)
+      print(f'Querying for records {prepos_key} : {prepos_value[0]}')
+
+    elif prepos_key == 'between':
+      from_to = prepos_value
+      _dict = {
+        'createdDateFrom' : from_to[0],
+        'createdDateTo'   : from_to[1]
+      }
+      data.update(_dict)
+      print(f'Querying for records {prepos_key} : {from_to[0]} and {from_to[1]}')
+
+  print(st['glorious_separation'])
+
   data          = dumps(data)
 
   try:

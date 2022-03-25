@@ -123,7 +123,7 @@ def query(trough, *args, **options):
   else:
     raise AuthorisationException(f'{e.query_urlscan_failed}: Urlscan API key missing.')
 
-  if _options == 'REPEAT':
+  if 'constants' in _options.keys() and 'REPEAT' in _options['constants']:
     try:
       sleep(int(DEFAULT_INTERVAL))
     except KeyboardInterrupt:

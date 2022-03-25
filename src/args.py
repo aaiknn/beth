@@ -53,6 +53,36 @@ peek.add_argument(
 )
 
 peek.add_argument(
+  '--after', '-A',
+  default=SUPPRESS,
+  help='Find records that have been created after a given date (format: YYYY-MM-DD).',
+  type=str,
+  dest='after',
+  nargs=1,
+  required=False
+)
+
+peek.add_argument(
+  '--before', '-B',
+  default=SUPPRESS,
+  help='Find records that have been created before a given date (format: YYYY-MM-DD).',
+  type=str,
+  dest='before',
+  nargs=1,
+  required=False
+)
+
+peek.add_argument(
+  '--between', '-X',
+  default=SUPPRESS,
+  help='Find records that have been created between two given dates (format: YYYY-MM-DD).',
+  type=str,
+  dest='between',
+  nargs=2,
+  required=False
+)
+
+peek.add_argument(
   '-H',
   default=SUPPRESS,
   help='Historic lookup (if available)',

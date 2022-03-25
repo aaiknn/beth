@@ -104,7 +104,7 @@ def prepData(_input, **options):
   _data             = []
   _options          = options.get('options')
 
-  if 'BULK_FILE' in _options:
+  if 'constants' in _options.keys() and 'BULK_FILE' in _options['constants']:
     if path.exists(_input):
       with input(files=(_input)) as doc:
         for entry in doc:

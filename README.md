@@ -90,13 +90,19 @@ beth lookup --rwhois test@test.com
 
 #### Options
 ```sh
--H      Historic search
+-H                Historic search
+--after, -A       Query for records created after a given date
+--before, -B      Query for records created before a given date
+--between, -X     Query for records created between to given dates
 ```
 
-Example:
+Examples:
 
 ```sh
 beth lookup --rwhois test@test.com -H
+beth lookup --rwhois Google --after 2022-03-20
+beth lookup --rwhois Google --before 1990-01-01
+beth lookup --rwhois Google -X 2022-01-01 2022-01-31
 ```
 
 #### Search Operators

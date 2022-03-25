@@ -75,8 +75,8 @@ class CoursePlotter():
       '\nDate    :', timestamp
     )
 
-    if len(_options) > 0:
-      print('Options :', str(_options))
+    if 'constants' in _options.keys() and len(_options['constants']) > 0:
+      print('Options :', str(_options['constants']))
 
     print(st['glorious_separation'])
 

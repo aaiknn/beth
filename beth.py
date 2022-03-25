@@ -13,12 +13,6 @@ modules         = args.parse()
 module          = modules[0]
 jobs            = vars(modules[1])
 
-if 'options' in vars(modules[1]):
-  options       = [modules[1].options]
-  del jobs['options']
-else:
-  options       = []
-
 try:
   sessionTroughs  = Troughs()
   sessionTroughs.retrieve_all()
@@ -27,7 +21,32 @@ except SessionWarning as w:
 except Exception as f:
   raise f
 
-def the_most_important_function(jobs):
+def whats_up_doc(jobs):
+  if 'options' in vars(modules[1]):
+    options       = {
+      'constants' : [modules[1].options]
+    }
+    del jobs['options']
+  else:
+    options       = {}
+
+  prepositions = [
+    'after',
+    'before',
+    'between'
+  ]
+
+  for item in prepositions:
+    if item in jobs:
+      _dict = {
+        'prepositions' : { item : jobs[item] }
+      }
+      options.update(_dict)
+      del jobs[item]
+
+  return options
+
+def the_most_important_function(jobs, options):
   for job in jobs:
     args        = jobs[job]
 
@@ -49,4 +68,5 @@ def the_most_important_function(jobs):
     except Exception as f:
       raise(f)
 
-the_most_important_function(jobs)
+options = whats_up_doc(jobs)
+the_most_important_function(jobs, options)
