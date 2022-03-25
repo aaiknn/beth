@@ -8,6 +8,7 @@ from requests import post
 from sessions.exceptions import AuthorisationException, QueryException
 
 from phrases import exceptions as e
+from src.globals import structures as st
 
 load_dotenv()
 
@@ -34,7 +35,6 @@ def make_pretty(target, response):
 
   else:
     output               += f'WhoisXMLApi found no domain results for {target}.'
-
   if next_page_search_after is not None:
     output               += f'Next search after: {next_page_search_after}'
 
@@ -54,36 +54,29 @@ def clean_list(_list):
 def retrieve(target, **options):
   timestamp     = ''
   _options      = options.get('options')
+  searchType    = 'current'
 
-  if _options is None:
-    searchType  = 'current'
-
-  elif _options == 'HISTORIC':
+  if 'HISTORIC' in _options:
     searchType  = 'historic'
 
-  else:
-    searchType  = 'current'
-
   targets       = target.strip('\'" ')
-  targets       = targets.split('NOT')
+  targets       = targets.split(' NOT ')
   wanted        = targets.pop(0)
   unwanted      = targets
-  wanted        = wanted.split('AND')
+  wanted        = wanted.split(' AND ')
 
   if unwanted is None:
     unwanted    = []
 
   unwanted      = clean_list(unwanted)
   wanted        = clean_list(wanted)
-
+  max_amount    = 4
+  LIMIT         = max_amount
   n_excludes    = []
   n_includes    = []
-  max_amount    = 4
 
-  i = max_amount
-
-  if len(unwanted) > i:
-    excludes    = unwanted[:i]
+  if len(unwanted) > LIMIT:
+    excludes    = unwanted[:LIMIT]
 
     for item in excludes:
       unwanted.remove(item)
@@ -95,8 +88,8 @@ def retrieve(target, **options):
   else:
     excludes    = unwanted
 
-  if len(wanted) > i:
-    includes    = wanted[:i]
+  if len(wanted) > LIMIT:
+    includes    = wanted[:LIMIT]
 
     for item in includes:
       wanted.remove(item)
@@ -106,21 +99,24 @@ def retrieve(target, **options):
   else:
     includes    = wanted
 
-  print(f'Included terms: {str(includes)}\nExcluded terms: {str(excludes)}')
+  print(f'Included terms: {str(includes)}')
+  if len(excludes) > 0:
+    print(f'Excluded terms: {str(excludes)}')
   if len(n_includes) > 0:
     print(f'Max of {max_amount} terms exceeded. Dropped terms from inclusion: {str(n_includes)}')
   if len(n_excludes) > 0:
     print(f'Max of {max_amount} exclusion terms exceeded. Dropped terms from exclusion: {str(n_excludes)}')
+  print(st['glorious_separation'])
 
   data          = {
-    'apiKey': W2_USER,
-    'searchType': searchType,
-    'mode': 'purchase',
-    'punycode': True,
-    'searchAfter': timestamp,
+    'apiKey'      : W2_USER,
+    'searchType'  : searchType,
+    'mode'        : 'purchase',
+    'punycode'    : True,
+    'searchAfter' : timestamp,
     'basicSearchTerms': {
-      'include': includes,
-      'exclude': excludes
+      'include'   : includes,
+      'exclude'   : excludes
     }
   }
   data          = dumps(data)
@@ -144,13 +140,11 @@ def whoisQuery(trough, *args, **options):
       if sc == 200:
         try:
           make_pretty(target, result)
-
         except Exception as f:
           raise f
 
       elif sc == 401 or sc == 422:
         print(result.text, result.status_code)
-
       else:
         raise QueryException(f'{e.query_whoisxmlapi_failed}: Status not OK, but {sc}.')
 

@@ -104,7 +104,7 @@ def prepData(_input, **options):
   _data             = []
   _options          = options.get('options')
 
-  if _options == 'BULK_FILE':
+  if 'BULK_FILE' in _options:
     if path.exists(_input):
       with input(files=(_input)) as doc:
         for entry in doc:
@@ -120,6 +120,16 @@ def prepData(_input, **options):
 
   return _data
 
+def handle_or_retrieve(loc):
+  try:
+    loc           = sanitiseLine(loc)
+    target        = identifyTarget(loc)
+    response      = sendRequest(target)
+  except Exception as f:
+    raise f
+  else:
+    return response
+
 def is_it_up(trough, *args, **options):
   input           = args[0]
   _dict           = {}
@@ -132,25 +142,19 @@ def is_it_up(trough, *args, **options):
   else:
     for member in _data:
       try:
-        member    = sanitiseLine(member)
-        target    = identifyTarget(member)
-        response  = sendRequest(target)
+        response  = handle_or_retrieve(member)
+      except NoTargetWarning as eh:
+        print('Skipping empty line.')
+        continue
       except ConnectionError as f:
-        print(f'\033[31m{target} can\'t be reached.\033[0m')
+        print(f'\033[31m{member} can\'t be reached.\033[0m')
         sc        = 'X01'
       except Exception as f:
         sc        = 'X02'
         raise Exception(f)
       else:
-        print(f'\033[32m{target} is up.\033[0m')
+        print(f'\033[32m{member} is up.\033[0m')
         sc        = str(response.status_code)
-      finally:
-        if sc in _dict.keys:
-          _dict[sc].append(target)
-        else:
-          _dict[sc] = [target]
-        print(str(_dict))
-        summarise(_dict, **options)
 
   finally:
     return trough
@@ -166,18 +170,16 @@ def whats_the_status(trough, *args, **options):
   else:
     for member in _data:
       try:
-        member    = sanitiseLine(member)
-        target    = identifyTarget(member)
-        response  = sendRequest(target)
+        response  = handle_or_retrieve(member)
       except ConnectionError as f:
-        print(f'[-] \033[31m{target}\033[0m can\'t be reached.')
+        print(f'[-] \033[31m{member}\033[0m can\'t be reached.')
       except NoTargetWarning as eh:
         print('Skipping empty line.')
         continue
       except Exception as f:
         raise Exception(f)
       else:
-        handleResponse(target, response)
+        handleResponse(member, response)
 
   finally:
     return trough

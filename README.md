@@ -1,7 +1,7 @@
 # BETH!
 A tool that supports people busting some bottoms.
 
-## Check
+## Check Module
 Verify things.
 
 Alias: `-C`
@@ -19,7 +19,7 @@ Example:
 beth check --email test@test.com
 ```
 
-## Lookup
+## Lookup Module
 DNS data related lookup stuff.
 
 Alias: `-L`
@@ -80,6 +80,8 @@ lookup --rwhois <SEARCH_TERM>
 
 Default is querying current records.
 
+Search terms are case insensitive.
+
 Example:
 
 ```sh
@@ -98,7 +100,7 @@ beth lookup --rwhois test@test.com -H
 ```
 
 #### Search Operators
-Searches can be combined using AND.
+Searches can be combined into bulk using AND.
 Terms can be excluded from results using NOT.
 
 Example:
@@ -106,7 +108,9 @@ Example:
 beth lookup --rwhois "things AND stuff AND everything NOT desperation NOT exhaustion"
 ```
 
-## Query
+Note: Chaining terms with AND does not retrieve entries that match all of the terms. Instead, it retrieves a bulk of all entries that match at least one of the terms. 
+
+## Query Module
 Ask around the internet for advice.
 Alias: `-Q`
 
@@ -135,7 +139,7 @@ Note: A default value of the amount of results that are retrieved can be set in 
 
 Note: The amount of seconds that pass before the next query is sent can be set in your .env file.
 
-## Investigate
+## Investigate Module
 More in-depth investigation.
 Alias: `-I`
 
@@ -167,8 +171,9 @@ Example:
 beth investigate --shodan 4.4.4.4
 ```
 
-## HTTP Utilities
-### Test: Is a domain up?
+## Test Module: HTTP Utilities
+### Up
+Is a domain up?
 
 ```sh
 test --up <URL>
@@ -192,7 +197,8 @@ Example:
 beth test --up myfilename.txt -F
 ```
 
-### Test: What's the response status from a request to a domain?
+### Status
+What's the response status from a request to a domain?
 
 ```sh
 test --status <URL>
