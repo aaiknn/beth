@@ -2,7 +2,7 @@
 
 from os import environ as env
 from dotenv import load_dotenv
-from json import dumps
+from json import dumps, loads
 from requests import post
 
 from sessions.exceptions import AuthorisationException
@@ -11,7 +11,8 @@ from utils.renderers.UrlscanResponse import UsMessage, UsResponse
 from phrases import exceptions as e
 
 load_dotenv()
-US_USER   = env.get('API_KEY_URLSCAN')
+US_USER       = env.get('API_KEY_URLSCAN')
+DEFAULT_TAGS  = env.get('DEFAULT_URLSCAN_SCAN_TAGS')
 
 _dict = None
 
@@ -32,38 +33,57 @@ def make_pretty(response):
   print(output)
 
 def scan_submission(target):
-  headers     = {'API-Key':str(US_USER),'Content-Type':'application/json'}
-  data        = {"url": target, "visibility": "public"}
-  response    = post('https://urlscan.io/api/v1/scan/',headers=headers, data=dumps(data))
+  headers     = {
+    'API-Key'       : str(US_USER),
+    'Content-Type'  : 'application/json'
+  }
+  data        = {
+    'url'           : target,
+    'visibility'    : 'public'
+  }
 
+  if DEFAULT_TAGS is not None:
+    try:
+      tags = loads(DEFAULT_TAGS)
+    except:
+      raise ValueError('DEFAULT_URLSCAN_SCAN_TAGS environment variable is formatted incorrectly.')
+
+    if len(tags) > 0:
+      _dict = { 'tags' : tags }
+      data.update(_dict)
+
+  data        = dumps(data)
+
+  response    = post(
+    'https://urlscan.io/api/v1/scan/',
+    headers = headers,
+    data    = data
+  )
   return response
 
 def scan(trough, *args, **options):
-  if US_USER is not None:
-    try:
-      response  = scan_submission(args[0])
-      sc        = response.status_code
+  if US_USER is None:
+    raise AuthorisationException(f'{e.query_urlscan_failed}: Urlscan API key is missing.')
 
+  try:
+    response  = scan_submission(args[0])
+    sc        = response.status_code
+  except Exception as f:
+    raise f
+
+  if sc == 200:
+    try:
+      make_pretty(response)
     except Exception as f:
       raise f
 
-    if sc == 200:
-      try:
-        make_pretty(response)
-
-      except Exception as f:
-        raise f
-
-    else:
-      m       = response.json()
-      result  = UsMessage(
-        args[0],
-        sc,
-        m['message']
-      )
-      print(f'Response code {result.result}: {result.message} ({result.url}).')
-
   else:
-    raise AuthorisationException(f'{e.query_urlscan_failed}: Urlscan API key is missing.')
+    m       = response.json()
+    result  = UsMessage(
+      args[0],
+      sc,
+      m['message']
+    )
+    print(f'Response code {result.result}: {result.message} ({result.url}).')
 
   return trough

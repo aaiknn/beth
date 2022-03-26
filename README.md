@@ -168,6 +168,13 @@ Example:
 beth investigate --scan http://www.catb.org/~esr/faqs/smart-questions.html
 ```
 
+#### Tags
+You can choose to add one or more tags to your scan. These can be set in your .env file in the following format:
+
+```txt
+["tag1", "tag2", "tag3"]
+```
+
 ### Shodan
 Retrieves information on the target IP from Shodan.
 
