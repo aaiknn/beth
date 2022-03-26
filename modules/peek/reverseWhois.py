@@ -14,6 +14,7 @@ load_dotenv()
 
 W2_USER           = env.get('API_KEY_WHOISXML')
 endpoint          = 'https://reverse-whois.whoisxmlapi.com/api/v2'
+RESULTS_CAP       = env.get('DEFAULT_REVERSE_WHOIS_QUERY_RESULTS_CAP')
 
 def make_pretty(target, response):
   _dict                   = response.json()
@@ -29,7 +30,7 @@ def make_pretty(target, response):
       i                   = i+1
       output             += f'  * {entry}\n'
 
-      if i == 50:
+      if RESULTS_CAP is not None and i == int(RESULTS_CAP):
         output           += f'\n Skipped output of {amount - i} other entries.\n'
         break
 

@@ -72,8 +72,6 @@ Retrieves current and historic domain name entries for a given target.
 
 Note: This feature needs a WhoisXMLAPI API key in order to work.
 
-Note: Result output is currently capped after listing a max amount of 50 entries. While that isn't a great solution, it saves your terminal from certain spam for the time being. There's going to be a more suitable solution in the near future where you can pick your own cap amount or choose to not cap it at all, similar to Urlscan querying. Promise.
-
 ```sh
 lookup --rwhois <SEARCH_TERM>
 ```
@@ -81,6 +79,8 @@ lookup --rwhois <SEARCH_TERM>
 Default is querying current records.
 
 Search terms are case insensitive.
+
+Results output is capped after a default max amount of 50 entries. You can choose to either remove the cap or override the default value in your .env file.
 
 Example:
 
@@ -114,7 +114,9 @@ Example:
 beth lookup --rwhois "things AND stuff AND everything NOT desperation NOT exhaustion"
 ```
 
-Note: Chaining terms with AND does not retrieve entries that match all of the terms. Instead, it retrieves a bulk of all entries that each match at least one of the terms. 
+Note: Chaining terms with AND does not retrieve entries that match all of the terms. Instead, it retrieves a bulk of all entries that each match at least one of the terms.
+
+WhoisXMLAPI accepts a maximum amount of 4 entries for each included and excluded search terms. Therefore, additional terms will be dropped from searches and thus from results.
 
 ## Query Module
 Ask around the internet for advice.
