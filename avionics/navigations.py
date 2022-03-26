@@ -43,6 +43,14 @@ jobTitles = {
   'whois'   : 'Whois'
 }
 
+moduleTitles = {
+  'check'       : 'Verification',
+  'lookup'      : 'Lookup',
+  'query'       : 'Query',
+  'investigate' : 'Investigation',
+  'test'        : 'Test'
+}
+
 class CoursePlotter():
   def __init__(self, module, job, target, *args, **options):
     self.plot(module, job, target, *args, **options)
@@ -69,7 +77,7 @@ class CoursePlotter():
 
     print(st['glorious_separation'])
     print(
-      'Module  :', module,
+      'Module  :', moduleTitles[module],
       '\nJob     :', jobTitles[job],
       '\nTarget  :', target,
       '\nDate    :', timestamp

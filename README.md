@@ -93,7 +93,7 @@ beth lookup --rwhois test@test.com
 -H                Historic search
 --after, -A       Query for records created after a given date
 --before, -B      Query for records created before a given date
---between, -X     Query for records created between to given dates
+--between, -X     Query for records created between two given dates
 ```
 
 Examples:
@@ -114,10 +114,11 @@ Example:
 beth lookup --rwhois "things AND stuff AND everything NOT desperation NOT exhaustion"
 ```
 
-Note: Chaining terms with AND does not retrieve entries that match all of the terms. Instead, it retrieves a bulk of all entries that match at least one of the terms. 
+Note: Chaining terms with AND does not retrieve entries that match all of the terms. Instead, it retrieves a bulk of all entries that each match at least one of the terms. 
 
 ## Query Module
 Ask around the internet for advice.
+
 Alias: `-Q`
 
 ### Urlscan
@@ -147,6 +148,7 @@ Note: The amount of seconds that pass before the next query is sent can be set i
 
 ## Investigate Module
 More in-depth investigation.
+
 Alias: `-I`
 
 ### Scan
@@ -178,6 +180,10 @@ beth investigate --shodan 4.4.4.4
 ```
 
 ## Test Module: HTTP Utilities
+Some stuff about checking out the HTTP plumbing.
+
+Alias: `-T`
+
 ### Up
 Is a domain up?
 
@@ -210,16 +216,16 @@ What's the response status from a request to a domain?
 test --status <URL>
 ```
 
-#### Options
-```sh
--F      Instead of using one domain name from the command-line, read input from
-        a file of domain names that are separated by new lines.
-```
-
 Example:
 
 ```sh
 beth test --status dontasktoask.com
+```
+
+#### Options
+```sh
+-F      Instead of using one domain name from the command-line, read input from
+        a file of domain names that are separated by new lines.
 ```
 
 Example:

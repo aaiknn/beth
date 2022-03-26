@@ -1,13 +1,9 @@
 #!/usr/bin/env python3
 
-from avionics.environmentals import SenseOfTime
 from avionics.navigations import CoursePlotter
 from sessions.exceptions import SessionWarning
 from utils.trough.Troughs import Troughs
-
 from src import args
-
-sot             = SenseOfTime()
 
 modules         = args.parse()
 module          = modules[0]
