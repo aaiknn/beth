@@ -16,10 +16,12 @@ class EnvironmentalSenses():
 
 class SenseOfTime():
 
-  def get_time(self):
+  def get_time(self, *args):
     timestamp = datetime.now()
+    if len(args) > 0:
+      timestamp = datetime.strftime(timestamp, *args)
     return timestamp
 
-  def state_time(self):
-    timestamp = datetime.now()
+  def state_time(self, *args):
+    timestamp = self.get_time(*args)
     print(timestamp)

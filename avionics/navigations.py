@@ -70,7 +70,7 @@ class CoursePlotter():
     _options    = options.get('options')
     sTs         = options.get('sessionTroughs')
     sot         = SenseOfTime()
-    timestamp   = sot.get_time()
+    timestamp   = sot.get_time('%Y-%m-%d %H:%M:%S %Z%z')
     func        = jobMap[job]
 
     trough      = self.create_trough(module, job, target, sTs)

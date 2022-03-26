@@ -127,7 +127,7 @@ def query(trough, *args, **options):
   if 'constants' in _options.keys() and 'REPEAT' in _options['constants']:
     try:
       sleep(int(DEFAULT_INTERVAL))
-      nav.state_time()
+      nav.state_time('%Y-%m-%d %H:%M:%S %Z%z')
     except KeyboardInterrupt:
       return
     except Exception as f:
