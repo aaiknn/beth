@@ -125,6 +125,7 @@ Alias: `-Q`
 
 ### Urlscan
 Finds scan result entries on Urlscan.
+
 Note: This feature needs a urlscan.io API key in order to work.
 
 ```sh

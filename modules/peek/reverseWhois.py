@@ -16,6 +16,11 @@ W2_USER           = env.get('API_KEY_WHOISXML')
 endpoint          = 'https://reverse-whois.whoisxmlapi.com/api/v2'
 RESULTS_CAP       = env.get('DEFAULT_REVERSE_WHOIS_QUERY_RESULTS_CAP')
 
+try:
+  RESULTS_CAP     = int(RESULTS_CAP)
+except:
+  RESULTS_CAP     = 10000
+
 def make_pretty(target, response):
   _dict                   = response.json()
   amount                  = _dict['domainsCount']
