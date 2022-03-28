@@ -18,7 +18,7 @@ except Exception as f:
   raise f
 
 def whats_up_doc(jobs):
-  if 'options' in vars(modules[1]):
+  if 'options' in jobs:
     options       = {
       'constants' : [modules[1].options]
     }

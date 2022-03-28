@@ -102,7 +102,7 @@ Examples:
 beth lookup --rwhois test@test.com -H
 beth lookup --rwhois Google --after 2022-03-20
 beth lookup --rwhois Google --before 1990-01-01
-beth lookup --rwhois Google -X 2022-01-01 2022-01-31
+beth lookup --rwhois Google -X 2022-01-01 2022-01-01
 ```
 
 #### Search Operators
