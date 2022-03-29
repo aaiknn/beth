@@ -37,6 +37,18 @@ Example:
 beth lookup --dns dontasktoask.com
 ```
 
+#### Options
+```sh
+-F      Instead of using one domain name from the command-line, read input from
+        a file of domain names that are separated by new lines.
+```
+
+Example:
+
+```sh
+beth lookup --dns myfilename.txt -F
+```
+
 ### Reverse IP
 Note: This feature needs a SecurityTrails API key in order to work.
 

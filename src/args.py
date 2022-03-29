@@ -92,6 +92,16 @@ peek.add_argument(
   required=False
 )
 
+peek.add_argument(
+  '-F',
+  default=SUPPRESS,
+  help='Runs lookup against bulk data in a specified file',
+  action='store_const',
+  const='BULK_FILE',
+  dest='options',
+  required=False
+)
+
 query.add_argument(
   '--urlscan',
   default=SUPPRESS,

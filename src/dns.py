@@ -1,51 +1,65 @@
 #!/usr/bin/env python3
 
+from os import path
+from fileinput import input
 import dns.resolver
 
 rTypes        = ['A', 'AAAA', 'CNAME','NS', 'MX', 'PTR', 'SOA', 'TXT']
 
-class Records:
-  def __init__(self):
-    for rtype in rTypes:
-      self.__setitem__(rtype, [])
-
-  def __setitem__(self, key, value):
-    setattr(self, key, value)
-  
-  def __getitem__(self, key):
-    return getattr(self, key)
-  
-  def add_item(self, key, value):
-    current = self.__getitem__(key)
-    current.append(value)
-    self.__setitem__(key, current)
-
-def pull(records, target):
+def pull(target):
   for rtype in rTypes:
+    output = ''
     try:
       response      = dns.resolver.query(target, rtype)
 
     except Exception as f:
       f_name = str(type(f).__name__)
-      print(f_name, ':', f)
+      print(f_name, ':', f, '\n')
       continue
 
-    for part in response:
-      records.add_item(rtype, part)
+    else:
+      output += f'{rtype}:\n'
+      for line in response:
+        output += f'  * {line}\n'
+      output += '\n'
+      print(output)
 
-def make_pretty(records):
-  for result in vars(records):
-    if len(records[result]) > 0:
-      print('')
-      print(str(result))
+def prepData(_input, **options):
+  _data             = []
+  _options          = options.get('options')
 
-      for entry in records[result]:
-        print(str(entry))
+  if 'constants' in _options.keys() and 'BULK_FILE' in _options['constants']:
+    if path.exists(_input):
+      with input(files=(_input)) as doc:
+        for entry in doc:
+          entry     = entry.split('\n')
+          entry     = entry[0]
+          _data.append(entry)
+
+    else:
+      raise FileNotFoundError(f'\'{_input}\' doesn\'t appear to be an existing path on your system.')
+
+  else:
+    _data.append(_input)
+
+  return _data
 
 def collect(trough, *args, **options):
-  records       = Records()
+  input        = args[0]
 
-  pull(records, args[0])
-  make_pretty(records)
+  try:
+    _data       = prepData(input, **options)
+  except Exception as f:
+    raise f
+  else:
+    for loc in _data:
+      if len(loc) > 0:
+        if len(_data) > 1:
+          print(f'Records for: {loc}')
+
+        pull(loc)
+
+        if len(_data) > 1:
+          print('\n')
 
   return trough
