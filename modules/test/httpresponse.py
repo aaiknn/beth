@@ -52,19 +52,6 @@ def handleResponse(target, response):
     except Exception as f:
       print(f)
 
-def summarise(_dict, **options):
-  _keys             = _dict.keys()
-  _output           = ''
-
-  _output          += 'Summary:\n\n'
-
-  for entry in _keys:
-    _output        += f'{entry}s:\n'
-    for member in entry:
-      _output      += f'  * {member}\n'
-
-  print(_output)
-
 def sendRequest(url):
   if USER_AGENT is None:
     AGENT           = 'BETH_FROM_ABOVE'
@@ -82,13 +69,32 @@ def sendRequest(url):
 
   return response
 
-def sanitiseLine(line):
-  if len(line) == 0:
-    raise NoTargetWarning()
-  elif line.startswith('#') or line.startswith('//'):
-    raise NoTargetWarning()
+def handle_request(loc, _dict, mode):
+  try:
+    response, _dict  = handle_or_retrieve(loc, _dict)
+  except KeyboardInterrupt as stahp:
+    raise stahp
 
-  return line
+  except NoTargetWarning:
+    print('Skipping empty line.')
+
+  except ConnectionError as f:
+    if mode == 'up':
+      print(f'\033[31m{loc} can\'t be reached.\033[0m')
+    else:
+      print(f'[-] \033[31m{loc}\033[0m can\'t be reached.')
+    _dict = update_summary(_dict, 'X01', loc)
+
+  except Exception as f:
+    _dict = update_summary(_dict, 'X02', loc)
+    raise Exception(f)
+  else:
+    if mode == 'up':
+      print(f'\033[32m{loc} is up.\033[0m')
+    else:
+      handleResponse(loc, response)
+
+  return _dict
 
 def identifyTarget(target):
   target            = target.split('//')
@@ -99,6 +105,27 @@ def identifyTarget(target):
     target          = f'http://{target[0]}'
 
   return target
+
+def sanitiseLine(line):
+  if len(line) == 0:
+    raise NoTargetWarning()
+  elif line.startswith('#') or line.startswith('//'):
+    raise NoTargetWarning()
+
+  return line
+
+def handle_or_retrieve(loc, _dict):
+  try:
+    loc           = sanitiseLine(loc)
+    target        = identifyTarget(loc)
+    response      = sendRequest(target)
+  except Exception as f:
+    raise f
+  else:
+    sc = str(response.status_code)
+    _dict = update_summary(_dict, sc, target)
+
+  return (response, _dict)
 
 def prepData(_input, **options):
   _data             = []
@@ -120,43 +147,40 @@ def prepData(_input, **options):
 
   return _data
 
-def handle_or_retrieve(loc):
-  try:
-    loc           = sanitiseLine(loc)
-    target        = identifyTarget(loc)
-    response      = sendRequest(target)
-  except Exception as f:
-    raise f
+def update_summary(_dict, sc, target):
+  if sc in _dict.keys():
+    _dict[sc].append(target)
   else:
-    return response
+    _dict.update({ sc : [ target ] })
+
+  return _dict
+
+def summarise(_dict):
+  _keys             = _dict.keys()
+  _output           = ''
+  _output          += '\nSummary:\n\n'
+
+  for entry in _keys:
+    _output        += f'{entry}s:\n'
+    for member in _dict[entry]:
+      _output      += f'  * {member}\n'
+
+  print(_output)
 
 def is_it_up(trough, *args, **options):
   input           = args[0]
-  _dict           = {}
 
   try:
     _data   = prepData(input, **options)
   except Exception as f:
     raise Exception(f)
-
   else:
+    _dict         = {}
     for member in _data:
-      try:
-        response  = handle_or_retrieve(member)
-      except NoTargetWarning as eh:
-        print('Skipping empty line.')
-        continue
-      except ConnectionError as f:
-        print(f'\033[31m{member} can\'t be reached.\033[0m')
-        sc        = 'X01'
-      except Exception as f:
-        sc        = 'X02'
-        raise Exception(f)
-      else:
-        print(f'\033[32m{member} is up.\033[0m')
-        sc        = str(response.status_code)
+      _dict = handle_request(member, _dict, 'up')
 
   finally:
+    summarise(_dict)
     return trough
 
 def whats_the_status(trough, *args, **options):
@@ -166,20 +190,11 @@ def whats_the_status(trough, *args, **options):
     _data         = prepData(input, **options)
   except Exception as f:
     raise Exception(f)
-
   else:
+    _dict         = {}
     for member in _data:
-      try:
-        response  = handle_or_retrieve(member)
-      except ConnectionError as f:
-        print(f'[-] \033[31m{member}\033[0m can\'t be reached.')
-      except NoTargetWarning as eh:
-        print('Skipping empty line.')
-        continue
-      except Exception as f:
-        raise Exception(f)
-      else:
-        handleResponse(member, response)
+      _dict = handle_request(member, _dict, 'status')
 
   finally:
+    summarise(_dict)
     return trough

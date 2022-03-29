@@ -18,13 +18,19 @@ except Exception as f:
   raise f
 
 def whats_up_doc(jobs):
+  options         = {}
+
   if 'options' in jobs:
-    options       = {
+    options.update({
       'constants' : [modules[1].options]
-    }
+    })
     del jobs['options']
-  else:
-    options       = {}
+
+  if 'verbosity' in jobs:
+    options.update({
+      'verbosity' : modules[1].verbosity
+    })
+    del jobs['verbosity']
 
   prepositions = [
     'after',

@@ -154,6 +154,16 @@ test.add_argument(
   required=False
 )
 
+test.add_argument(
+  '-v',
+  default=SUPPRESS,
+  help='Prints more in-depth information on test results',
+  action='store_const',
+  const=1,
+  dest='verbosity',
+  required=False
+)
+
 # VERIFY PARSER
 verify.add_argument(
   '--email',
