@@ -102,6 +102,15 @@ peek.add_argument(
   required=False
 )
 
+peek.add_argument(
+  '--mode', '-M',
+  default=SUPPRESS,
+  help='Mode of reverse lookup ("default" or "preview")',
+  type=str,
+  nargs=1,
+  required=False
+)
+
 query.add_argument(
   '--urlscan',
   default=SUPPRESS,

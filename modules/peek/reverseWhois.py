@@ -24,24 +24,31 @@ except:
 def make_pretty(target, response):
   _dict                   = response.json()
   amount                  = _dict['domainsCount']
-  next_page_search_after  = _dict['nextPageSearchAfter']
   output                  = ''
 
+  if 'nextPageSearchAfter' in _dict.keys():
+    next_page_search_after= _dict['nextPageSearchAfter']
+
   if amount > 0:
-    output               += f'WhoisXMLApi found {str(amount)} domain results:\n\n'
-    i                     = 0
+    output               += f'WhoisXMLApi found {str(amount)} domain results'
 
-    for entry in _dict['domainsList']:
-      i                   = i+1
-      output             += f'  * {entry}\n'
+    if 'domainsList' in _dict.keys():
+      output             += ':\n\n'
+      i                   = 0
 
-      if RESULTS_CAP is not None and i == int(RESULTS_CAP):
-        output           += f'\n Skipped output of {amount - i} other entries.\n'
-        break
+      for entry in _dict['domainsList']:
+        i                   = i+1
+        output             += f'  * {entry}\n'
+
+        if RESULTS_CAP is not None and i == int(RESULTS_CAP):
+          output           += f'\n Skipped output of {amount - i} other entries.\n'
+          break
+    else:
+      output             += '.'
 
   else:
     output               += f'WhoisXMLApi found no domain results for {target}.'
-  if next_page_search_after is not None:
+  if 'nextPageSearchAfter' in _dict.keys() and next_page_search_after is not None:
     output               += f'Next search after: {next_page_search_after}'
 
   print(output)
@@ -149,6 +156,13 @@ def retrieve(target, **options):
       }
       data.update(_dict)
       print(f'Querying for records {prepos_key} : {from_to[0]} and {from_to[1]}')
+
+  if 'mode' in _options.keys() and 'preview' in _options['mode']:
+    _dict = {
+      'mode' : 'preview'
+    }
+    data.update(_dict)
+    print(f'Mode : Entry count preview')
 
   print(st['glorious_separation'])
 

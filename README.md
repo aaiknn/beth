@@ -106,6 +106,9 @@ beth lookup --rwhois test@test.com
 --after, -A       Query for records created after a given date
 --before, -B      Query for records created before a given date
 --between, -X     Query for records created between two given dates
+--mode, -M        'preview' to retrieve only the amount of results. Will not consume
+                    any Domain Research Suite (DRS) credits.
+                  'default' to retrieve result entries. Consumes 1 DRS credit.
 ```
 
 Examples:
@@ -115,6 +118,7 @@ beth lookup --rwhois test@test.com -H
 beth lookup --rwhois Google --after 2022-03-20
 beth lookup --rwhois Google --before 1990-01-01
 beth lookup --rwhois Google -X 2022-01-01 2022-01-01
+beth lookup --rwhois 'A very unique term that probably hardly finds any results whatsoever' -M 'preview'
 ```
 
 #### Search Operators

@@ -20,6 +20,12 @@ except Exception as f:
 def whats_up_doc(jobs):
   options         = {}
 
+  if 'mode' in jobs:
+    options.update({
+      'mode' : modules[1].mode
+    })
+    del jobs['mode']
+
   if 'options' in jobs:
     options.update({
       'constants' : [modules[1].options]
