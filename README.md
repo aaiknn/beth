@@ -67,7 +67,7 @@ beth lookup --reverse 8.8.8.8
 ### Whois
 Retrieves Whois entries for a given domain.
 
-Note: This feature needs a WhoisXMLAPI API key in order to work.
+Note: This feature needs either a Whoxy or a WhoisXMLAPI API key in order to work. You can choose and set the service that you prefer using in your .env file.
 
 ```sh
 lookup --whois <DOMAIN_NAME>
