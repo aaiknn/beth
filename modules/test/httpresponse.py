@@ -4,8 +4,8 @@ from os import environ as env, path
 from fileinput import input
 from dotenv import load_dotenv
 from requests import get
-from requests.exceptions import ConnectionError
 
+from requests.exceptions import ConnectionError, HTTPError
 from sessions.exceptions import NoTargetWarning
 
 load_dotenv()
@@ -74,23 +74,34 @@ def handle_request(loc, _dict, mode):
     response, _dict  = handle_or_retrieve(loc, _dict)
   except KeyboardInterrupt as stahp:
     raise stahp
-
   except NoTargetWarning:
     print('Skipping empty line.')
 
+  except HTTPError as f:
+    c  = 'UNKNOWN'
+    m  = f'\033[31m{loc}\033[0m can\'t be reached.'
+    if mode is not 'up':
+      c  = 'X00'
+      m  = f'[-] ' + m + f'({f})'
+    print(m)
+    _dict = update_summary(_dict, c, loc)
+
   except ConnectionError as f:
-    if mode == 'up':
-      print(f'\033[31m{loc} can\'t be reached.\033[0m')
-    else:
-      print(f'[-] \033[31m{loc}\033[0m can\'t be reached.')
-    _dict = update_summary(_dict, 'X01', loc)
+    c = 'DOWN'
+    m = f'\033[31m{loc}\033[0m can\'t be reached.'
+    if mode is not 'up':
+      c = 'X01'
+      m = f'[-] ' + m
+    print(m)
+    _dict = update_summary(_dict, c, loc)
 
   except Exception as f:
-    _dict = update_summary(_dict, 'X02', loc)
+    _dict = update_summary(_dict, 'ERROR', loc)
     raise Exception(f)
   else:
     if mode == 'up':
-      print(f'\033[32m{loc} is up.\033[0m')
+      print(f'\033[32m{loc}\033[0m is up.')
+      _dict = update_summary(_dict, 'UP', loc)
     else:
       handleResponse(loc, response)
 
@@ -98,12 +109,10 @@ def handle_request(loc, _dict, mode):
 
 def identifyTarget(target):
   target            = target.split('//')
-
   if len(target) > 1:
     target          = f'{target[0]}//{target[1]}'
   else:
     target          = f'http://{target[0]}'
-
   return target
 
 def sanitiseLine(line):
