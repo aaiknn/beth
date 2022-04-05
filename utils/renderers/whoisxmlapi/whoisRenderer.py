@@ -62,7 +62,6 @@ class WhoisResponse():
         r_code            = r_data['parseCode']
         res_message      += f'Parse code      : {r_code}\n'
 
-        # TODO: use one of
         if 'createdDateNormalized' in _r_keys or 'expiresDateNormalized' in _r_keys or 'updatedDateNormalized' in _r_keys:
           res_message    += f'\nImportant dates :\n'
 
