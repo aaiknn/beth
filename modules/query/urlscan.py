@@ -31,16 +31,17 @@ def make_pretty(response):
   print(f'Total results: {max_amount}\nDisplaying {res_amount}.\n')
 
   for entry in _dict['results']:
-    i_date        = entry['indexedAt']
-    _date         = str(i_date)
     r_keys        = entry.keys()
-
-    fqdm          = entry['task']['domain']
     t_keys        = entry['task'].keys()
-
+    fqdm          = entry['task']['domain']
     s_req_amount  = entry['stats']['requests']
 
-    print(f'{i} - {_date}: \033[33m{fqdm}\033[0m')
+    if 'indexedAt' in r_keys:
+      i_date        = entry['indexedAt']
+      _date         = str(i_date)
+      print(f'{i} - {_date}: \033[33m{fqdm}\033[0m')
+    else:
+      print(f'{i} - NODATE: \033[33m{fqdm}\033[0m')
 
     if 'page' in r_keys:
       p_asnn      = entry['page']['asnname']

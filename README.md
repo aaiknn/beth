@@ -124,6 +124,7 @@ beth lookup --rwhois 'A very unique term that probably hardly finds any results 
 #### Search Operators
 ~~Searches can be combined into bulk using AND.~~
 Seaches can be made more specific using AND.
+
 Terms can be excluded from results using NOT.
 
 Example:
@@ -132,6 +133,7 @@ beth lookup --rwhois "things AND stuff AND everything NOT desperation NOT exhaus
 ```
 
 ~~Note: Chaining terms with AND does not retrieve entries that match all of the terms. Instead, it retrieves a bulk of all entries that each match at least one of the terms.~~
+
 **Note: Breaking change!** WhoisXMLAPI recently fixed a bug in their API where additional search terms found additional results. Since this fix went live in late March 2022, combinating search terms will make a search more specific. Hence, Beth's operator `AND` doesn't find additional results for additional terms anymore.
 
 WhoisXMLAPI accepts a maximum amount of 4 entries for each included and excluded search terms. Therefore, additional terms will be dropped from searches and thus from results.
