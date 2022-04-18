@@ -1,4 +1,4 @@
-#!/usr/bin/env python 3
+#!/usr/bin/env python3
 
 from os import environ as env
 from dotenv import load_dotenv
