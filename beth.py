@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from avionics.navigations import CoursePlotter
-from sessions.exceptions import SessionWarning
+from sessions.exceptions import BethException, SessionWarning
 from utils.trough.Troughs import Troughs
 from src import args
 
@@ -15,7 +15,7 @@ try:
 except SessionWarning as w:
   print(w)
 except Exception as f:
-  raise f
+  raise BethException(f)
 
 def whats_up_doc(jobs):
   options         = {}
@@ -74,7 +74,7 @@ def the_most_important_function(jobs, options):
       break
 
     except Exception as f:
-      raise(f)
+      raise BethException(f)
 
 options = whats_up_doc(jobs)
 the_most_important_function(jobs, options)
