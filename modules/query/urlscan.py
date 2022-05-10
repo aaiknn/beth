@@ -117,8 +117,12 @@ def query(trough, *args, **options):
 
     if sc == 200:
       make_pretty(response)
+    elif sc == 400:
+      print(f'{e.query_urlscan_failed}: {response.text}.')
     elif sc == 429:
       raise QueryException(f'{e.query_urlscan_failed}: Urlscan rate limit reached.')
+    elif sc == 502:
+      raise QueryException(f'{e.query_urlscan_failed}: The search API appears to be struggling. Check https://status.urlscan.io')
     else:
       raise QueryException(f'{e.query_urlscan_failed}: Status not OK, but {sc}.')
 

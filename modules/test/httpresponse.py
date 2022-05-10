@@ -8,9 +8,15 @@ from requests import get
 from requests.exceptions import ConnectionError, HTTPError
 from sessions.exceptions import NoTargetWarning
 
+from src.globals import structures as st
+
 load_dotenv()
 
 USER_AGENT            = env.get('DEFAULT_USER_AGENT')
+STATUS_TELL_ME_MORES  = env.get('DEFAULT_HTTP_STATUS_TELL_ME_MORES')
+
+if STATUS_TELL_ME_MORES is None:
+  STATUS_TELL_ME_MORES = []
 
 def prettifyHeaders(headers):
   _dict               = headers
@@ -21,7 +27,6 @@ def prettifyHeaders(headers):
 
 def handleResponse(target, response):
   sc                  = str(response.status_code)
-  tell_me_mores       = ['200', '203', '301', '503']
   response_map        = {
     '200' : 'Target reachable.',
     '203' : 'None-authoritative information.',
@@ -29,6 +34,7 @@ def handleResponse(target, response):
   }
   funky_map           = {
     '403' : 'Target doesn\'t think you should come here.',
+    '404' : 'Resource not found.',
     '405' : 'Method disallowed. Domain may be controlled.',
     '500' : 'Internal server error.',
     '502' : 'Bad gateway.',
@@ -46,7 +52,7 @@ def handleResponse(target, response):
   else:
     print(f'[!] \033[33m{sc}\033[0m {target} :\n{response.text}')
 
-  if sc in tell_me_mores:
+  if sc in STATUS_TELL_ME_MORES:
     try:
       prettifyHeaders(response.headers)
     except Exception as f:
@@ -54,13 +60,11 @@ def handleResponse(target, response):
 
 def sendRequest(url):
   if USER_AGENT is None:
-    AGENT           = 'BETH_FROM_ABOVE'
+    headers = {}
   else:
-    AGENT           = USER_AGENT
-
-  headers = {
-    'User-Agent': str(AGENT)
-  }
+    headers = {
+      'User-Agent': str(USER_AGENT)
+    }
 
   try:
     response = get(url, headers=headers)
@@ -80,7 +84,7 @@ def handle_request(loc, _dict, mode):
   except HTTPError as f:
     c  = 'UNKNOWN'
     m  = f'\033[31m{loc}\033[0m can\'t be reached.'
-    if mode is not 'up':
+    if mode != 'up':
       c  = 'X00'
       m  = f'[-] ' + m + f'({f})'
     print(m)
@@ -89,7 +93,7 @@ def handle_request(loc, _dict, mode):
   except ConnectionError as f:
     c = 'DOWN'
     m = f'\033[31m{loc}\033[0m can\'t be reached.'
-    if mode is not 'up':
+    if mode != 'up':
       c = 'X01'
       m = f'[-] ' + m
     print(m)
@@ -167,12 +171,24 @@ def update_summary(_dict, sc, target):
 def summarise(_dict):
   _keys             = _dict.keys()
   _output           = ''
-  _output          += '\nSummary:\n\n'
+  _output          += st['glorious_separation']
+  _output          += '\nSUMMARY:\n'
+  _output          += st['glorious_separation']
+
+  _output          += '\nAmounts:\n\n'
 
   for entry in _keys:
-    _output        += f'{entry}s:\n'
+    amount          = len(_dict[entry])
+    _output        += f' * {entry}: {amount}\n'
+
+  _output        += '\nEntries:\n\n'
+
+  for entry in _keys:
+    amount          = len(_dict[entry])
+    _output        += f'{entry}s ({amount}):\n'
+
     for member in _dict[entry]:
-      _output      += f'  * {member}\n'
+      _output      += f' * {member}\n'
 
   print(_output)
 

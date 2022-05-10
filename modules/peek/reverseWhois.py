@@ -192,6 +192,8 @@ def whoisQuery(trough, *args, **options):
 
       elif sc == 401 or sc == 422:
         print(result.text, result.status_code)
+      elif sc == 504:
+        print(f'{e.query_whoisxmlapi_failed}: Gateway time-out on WhoisXMLAPI\'s end.')
       else:
         raise QueryException(f'{e.query_whoisxmlapi_failed}: Status not OK, but {sc}.')
 
