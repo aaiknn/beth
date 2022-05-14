@@ -5,7 +5,7 @@ from sessions.exceptions import NavigationException
 from utils.trough.Trough import Trough
 
 from src.dns import collect
-from src.domainscan import scan
+from modules.stare.domainscan import scan
 from src.reverseip import reverse
 
 from modules.peek.reverseWhois import whoisQuery as reverseWhois

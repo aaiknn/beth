@@ -6,31 +6,13 @@ from json import dumps, loads
 from requests import post
 
 from sessions.exceptions import AuthorisationException
-from utils.renderers.UrlscanResponse import UsMessage, UsResponse
+from utils.renderers.urlscan.UrlscanSubmissionResponse import UrlscanResponse
 
 from phrases import exceptions as e
 
 load_dotenv()
 US_USER       = env.get('API_KEY_URLSCAN')
 DEFAULT_TAGS  = env.get('DEFAULT_URLSCAN_SCAN_TAGS')
-
-_dict = None
-
-def make_pretty(response):
-  try:
-    _dict       = UsResponse(response.json())
-    output      = ""
-    output      += _dict.entry.message
-    output      += ": "
-    output      += _dict.entry.result
-    output      += " ("
-    output      += _dict.entry.url
-    output      += ")."
-
-  except Exception as f:
-    raise f
-
-  print(output)
 
 def scan_submission(target):
   headers     = {
@@ -65,25 +47,20 @@ def scan(trough, *args, **options):
   if US_USER is None:
     raise AuthorisationException(f'{e.query_urlscan_failed}: Urlscan API key is missing.')
 
+  target = args[0]
+
   try:
-    response  = scan_submission(args[0])
+    response  = scan_submission(target)
     sc        = response.status_code
   except Exception as f:
     raise f
 
   if sc == 200:
     try:
-      make_pretty(response)
+      _dict       = UrlscanResponse(response, target)
+      _dict.render()
+
     except Exception as f:
       raise f
-
-  else:
-    m       = response.json()
-    result  = UsMessage(
-      args[0],
-      sc,
-      m['message']
-    )
-    print(f'Response code {result.result}: {result.message} ({result.url}).')
 
   return trough

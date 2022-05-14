@@ -8,6 +8,7 @@
 #     |   *-- ModuleException
 #     |   |   |
 #     |   |   *-- QueryException
+#     |   |   *-- SubmissionException
 #     |   |   *-- VerificationException
 #     |   |   *-- UnreachableException
 #     |   |
@@ -77,6 +78,10 @@ class UnreachableException(ModuleException):
     super().__init__(exceptionMessage)
 
 class QueryException(ModuleException):
+  def __init__(self, exceptionMessage=''):
+    super().__init__(exceptionMessage)
+
+class SubmissionException(ModuleException):
   def __init__(self, exceptionMessage=''):
     super().__init__(exceptionMessage)
 
