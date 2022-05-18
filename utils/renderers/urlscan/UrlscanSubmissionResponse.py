@@ -10,14 +10,25 @@ class UrlscanResponse:
 
   def render(self):
     try:
-      output      = ""
-      output      += self._dict['message']
-      output      += ": "
-      output      += self._dict['result']
-      output      += " ("
-      output      += self._dict['url']
-      output      += ")."
+      output         = ""
 
+      if 'message' in self._dict and 'result' in self._dict:
+        output      += self._dict['message']
+        output      += ": "
+        output      += self._dict['result']
+        output      += " ("
+        output      += self._dict['url']
+        output      += ")."
+
+      elif 'message' in self._dict and 'description' in self._dict:
+        output      += f"Status {self._dict['status']}: "
+        output      += self._dict['message']
+        output      += '\nDescription: '
+        output      += self._dict['description']
+
+      else:
+        output      += self._dict
+      
       print(output)
 
     except Exception as f:

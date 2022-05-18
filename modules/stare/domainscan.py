@@ -55,12 +55,11 @@ def scan(trough, *args, **options):
   except Exception as f:
     raise f
 
-  if sc == 200:
-    try:
-      _dict       = UrlscanResponse(response, target)
-      _dict.render()
+  try:
+    _dict       = UrlscanResponse(response, target)
+    _dict.render()
 
-    except Exception as f:
-      raise f
+  except Exception as f:
+    raise f
 
   return trough
