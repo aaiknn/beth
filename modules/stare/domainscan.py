@@ -3,10 +3,12 @@
 from os import environ as env
 from dotenv import load_dotenv
 from json import dumps, loads
-from requests import post
+from requests import get, post
+from time import sleep
 
 from sessions.exceptions import AuthorisationException
 from utils.renderers.urlscan.UrlscanSubmissionResponse import UrlscanResponse
+from utils.renderers.urlscan.UrlscanScanResultResponse import UrlscanResponse as ScanResponse
 
 from phrases import exceptions as e
 
@@ -43,7 +45,7 @@ def scan_submission(target):
   )
   return response
 
-def scan(trough, *args, **options):
+def scan(*args, **options):
   if US_USER is None:
     raise AuthorisationException(f'{e.query_urlscan_failed}: Urlscan API key is missing.')
 
@@ -51,7 +53,6 @@ def scan(trough, *args, **options):
 
   try:
     response  = scan_submission(target)
-    sc        = response.status_code
   except Exception as f:
     raise f
 
@@ -62,4 +63,43 @@ def scan(trough, *args, **options):
   except Exception as f:
     raise f
 
-  return trough
+  jobData = response.json()
+  return jobData
+
+def retrieve_scan_results(url, target):
+  sleep(7)
+  response  = get(url)
+  if response.status_code == 200:
+    _dict   = ScanResponse(response, target)
+
+    if len(_dict.requests) > 0:
+      output      = ''
+      output     += str(len(_dict.requests))
+      output     += ' requests:\n'
+
+      for entry in _dict.requests:
+        e_url     = entry['response_url']
+
+        output   += f'* {e_url}'
+
+        if 'response_ip' in entry.keys() and 'response_port' in entry.keys():
+          e_ip    = entry['response_ip']
+          e_port  = entry['response_port']
+          output += f' ({e_ip}:{e_port})\n'
+        else:
+          output += '\n'
+
+      print(output)
+
+    return _dict
+  else:
+    retrieve_scan_results(url, target)
+
+def full_scan(*args, **options):
+  target    = args[0]
+  jobData   = scan(*args, **options)
+  endpoint  = jobData['api']
+
+  print('Waiting to retrieve scan results...')
+  _dict = retrieve_scan_results(endpoint, target)
+  return _dict

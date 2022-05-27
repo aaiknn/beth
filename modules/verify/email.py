@@ -19,8 +19,7 @@ def colour_code(term, suspicion_status):
   else:
     return f'\033[33m{str(term)}\033[0m'
 
-def make_pretty(response):
-  _dict         = response.json()
+def make_pretty(_dict):
   t_details     = _dict['details']
 
   target        = _dict['email']
@@ -137,12 +136,13 @@ def verify_email(*args, **options):
   else:
     raise EmailVerificationException(f'{e.verify_email_failed}: Status not OK, but {response.status_code}.')
 
-def verify(trough, *args, **options):
+def verify(*args, **options):
   try:
     response = verify_email(*args, **options)
-    make_pretty(response)
+    _dict    = response.json()
+    make_pretty(_dict)
 
   except Exception as f:
     raise f
 
-  return trough
+  return _dict

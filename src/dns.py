@@ -4,6 +4,8 @@ from os import path
 from fileinput import input
 import dns.resolver
 
+from sessions.exceptions import BethException
+
 rTypes        = ['A', 'AAAA', 'CNAME','NS', 'MX', 'PTR', 'SOA', 'TXT']
 
 def pull(target):
@@ -44,13 +46,13 @@ def prepData(_input, **options):
 
   return _data
 
-def collect(trough, *args, **options):
+def collect(*args, **options):
   input        = args[0]
 
   try:
     _data       = prepData(input, **options)
   except Exception as f:
-    raise f
+    raise BethException(f)
   else:
     for loc in _data:
       if len(loc) > 0:
@@ -62,4 +64,4 @@ def collect(trough, *args, **options):
         if len(_data) > 1:
           print('\n')
 
-  return trough
+  return None

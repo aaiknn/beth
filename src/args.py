@@ -133,7 +133,7 @@ query.add_argument(
 stare.add_argument(
   '--scan',
   default=SUPPRESS,
-  help='Urlscan.io querying of a target',
+  help='Urlscan.io scan submission of a target',
   nargs=1,
   required=False
 )
@@ -142,6 +142,14 @@ stare.add_argument(
   '--shodan',
   default=SUPPRESS,
   help='Shodan querying of a target',
+  nargs=1,
+  required=False
+)
+
+stare.add_argument(
+  '--full',
+  default=SUPPRESS,
+  help='Retrieve as much information on a target domain as possible',
   nargs=1,
   required=False
 )

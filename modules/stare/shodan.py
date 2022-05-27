@@ -136,7 +136,7 @@ def retrieve(*args, **options):
 
   return(response)
 
-def query(trough, *args, **options):
+def query(*args, **options):
   if SHODAN_USER is None:
     raise AuthorisationException(f'{e.query_shodan_failed}: Shodan API key missing.')
 
@@ -150,4 +150,4 @@ def query(trough, *args, **options):
     else:
       print(response.status_code, response.text)
 
-    return trough
+    return None

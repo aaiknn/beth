@@ -122,7 +122,6 @@ beth lookup --rwhois 'A very unique term that probably hardly finds any results 
 ```
 
 #### Search Operators
-~~Searches can be combined into bulk using AND.~~
 Seaches can be made more specific using AND.
 
 Terms can be excluded from results using NOT.
@@ -131,10 +130,6 @@ Example:
 ```sh
 beth lookup --rwhois "things AND stuff AND everything NOT desperation NOT exhaustion"
 ```
-
-~~Note: Chaining terms with AND does not retrieve entries that match all of the terms. Instead, it retrieves a bulk of all entries that each match at least one of the terms.~~
-
-**Note: Breaking change!** WhoisXMLAPI recently fixed a bug in their API where additional search terms found additional results. Since this fix went live in late March 2022, combinating search terms will make a search more specific. Hence, Beth's operator `AND` doesn't find additional results for additional terms anymore.
 
 WhoisXMLAPI accepts a maximum amount of 4 entries for each included and excluded search terms. Therefore, additional terms will be dropped from searches and thus from results.
 
@@ -175,7 +170,7 @@ More in-depth investigation.
 Alias: `-I`
 
 ### Scan
-Retrieves information on the target webpage from urlscan.io.
+Submits a scan of the target webpage to urlscan.io.
 
 Note: This feature needs a urlscan.io API key in order to work.
 
@@ -187,6 +182,28 @@ Example:
 
 ```sh
 beth investigate --scan http://www.catb.org/~esr/faqs/smart-questions.html
+```
+
+#### Tags
+You can choose to add one or more tags to your scan. These can be set in your .env file in the following format:
+
+```txt
+["tag1", "tag2", "tag3"]
+```
+
+### Full Scan
+Submits a scan of the target webpage to urlscan.io and then retrieves its results.
+
+Note: This feature needs a urlscan.io API key in order to work.
+
+```sh
+investigate --full <URL>
+```
+
+Example:
+
+```sh
+beth investigate --full http://www.catb.org/~esr/faqs/smart-questions.html
 ```
 
 #### Tags

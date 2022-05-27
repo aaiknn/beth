@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from json import dumps
 from requests import post
 
+from urllib3.exceptions import NewConnectionError
 from sessions.exceptions import AuthorisationException, QueryException
 
 from phrases import exceptions as e
@@ -21,8 +22,7 @@ try:
 except:
   RESULTS_CAP     = 10000
 
-def make_pretty(target, response):
-  _dict                   = response.json()
+def make_pretty(target, _dict):
   amount                  = _dict['domainsCount']
   output                  = ''
 
@@ -171,22 +171,26 @@ def retrieve(target, **options):
   try:
     response    = post(endpoint, data=data)
 
+  except NewConnectionError as f:
+    raise QueryException(f'{e.query_whoisxmlapi_failed}: Exception while attempting to establish a HTTP connection: {f}.')
+
   except Exception as f:
     raise QueryException(f'{e.query_whoisxmlapi_failed}: {f}.')
 
   return response
 
-def whoisQuery(trough, *args, **options):
+def whoisQuery(*args, **options):
   target      = args[0]
 
   if W2_USER is not None:
     try:
       result  = retrieve(target, **options)
+      _dict   = result.json()
       sc      = result.status_code
 
       if sc == 200:
         try:
-          make_pretty(target, result)
+          make_pretty(target, _dict)
         except Exception as f:
           raise f
 
@@ -203,4 +207,4 @@ def whoisQuery(trough, *args, **options):
   else:
     raise AuthorisationException(f'{e.query_whoisxmlapi_failed}: WhoisXMLAPI key missing.')
 
-  return trough
+  return _dict

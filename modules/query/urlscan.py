@@ -105,7 +105,7 @@ def retrieve(*args):
 
   return response
 
-def query(trough, *args, **options):
+def query(*args, **options):
   _options    = options.get('options')
 
   if US_USER is None:
@@ -138,6 +138,6 @@ def query(trough, *args, **options):
     except Exception as f:
       raise f
     finally:
-      query(trough, *args, **options)
+      query(*args, **options)
 
-  return trough
+  return None

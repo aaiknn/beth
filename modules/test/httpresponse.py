@@ -192,7 +192,7 @@ def summarise(_dict):
 
   print(_output)
 
-def is_it_up(trough, *args, **options):
+def is_it_up(*args, **options):
   input           = args[0]
 
   try:
@@ -206,9 +206,9 @@ def is_it_up(trough, *args, **options):
 
   finally:
     summarise(_dict)
-    return trough
+    return None
 
-def whats_the_status(trough, *args, **options):
+def whats_the_status(*args, **options):
   input           = args[0]
 
   try:
@@ -222,4 +222,4 @@ def whats_the_status(trough, *args, **options):
 
   finally:
     summarise(_dict)
-    return trough
+    return None

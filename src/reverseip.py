@@ -177,4 +177,4 @@ def reverse(trough, *args, **options):
   else:
     raise AuthorisationException(f'{e.reverseip_securitytrails_failed}: SecurityTrails API key missing.')
 
-  return trough
+  return None

@@ -74,7 +74,8 @@ def the_most_important_function(jobs, options):
       break
 
     except Exception as f:
-      raise BethException(f)
+      f_name = str(type(f).__name__)
+      print(f_name, ':', f, '\n')
 
 options = whats_up_doc(jobs)
 the_most_important_function(jobs, options)

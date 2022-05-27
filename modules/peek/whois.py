@@ -44,7 +44,7 @@ def retrieve(target):
 
   return response
 
-def whoisQuery(trough, *args, **options):
+def whoisQuery(*args, **options):
   if WHOIS_SERVICE is not None:
     if WHOIS_USER is not None:
       try:
@@ -75,4 +75,4 @@ def whoisQuery(trough, *args, **options):
   else:
     raise Exception('NoWhoisServiceWarning')
 
-  return trough
+  return None
