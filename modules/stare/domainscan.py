@@ -77,16 +77,22 @@ def retrieve_scan_results(url, target):
       output     += ' requests:\n'
 
       for entry in _dict.requests:
-        e_url     = entry['response_url']
+        e_keys    = entry.keys()
+        failed    = entry['response_failed']
 
-        output   += f'* {e_url}'
-
-        if 'response_ip' in entry.keys() and 'response_port' in entry.keys():
-          e_ip    = entry['response_ip']
-          e_port  = entry['response_port']
-          output += f' ({e_ip}:{e_port})\n'
+        if 'failed':
+          errorText = entry['response_error_text']
+          output   += f'Request failed: {errorText}.'
         else:
-          output += '\n'
+          e_url     = entry['response_url']
+          output   += f'* {e_url}'
+
+          if 'response_ip' in entry.keys() and 'response_port' in entry.keys():
+            e_ip    = entry['response_ip']
+            e_port  = entry['response_port']
+            output += f' ({e_ip}:{e_port})\n'
+          else:
+            output += '\n'
 
       print(output)
 

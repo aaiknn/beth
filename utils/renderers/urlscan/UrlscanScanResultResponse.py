@@ -49,18 +49,28 @@ class UrlscanResponse:
 
       if 'response' in re_keys:
         er_keys    = e_response['response'].keys()
-        entryObj.update({
-          'response_url' : e_response['response']['url'],
-          'response_status' : e_response['response']['status'],
-          'response_time' : e_response['response']['responseTime']
-        })
 
-        if 'securityDetails' in er_keys:
-          sec        = e_response['response']['securityDetails']
+        if 'failed' in re_keys:
           entryObj.update({
-            'response_security_protocol' : sec['protocol'],
-            'response_security_issuer' : sec['issuer'],
+            'response_failed' : True,
+            'response_error_text' : e_response['response']['failed']['errorText']
           })
+
+        else:
+          if 'url' in er_keys:
+            entryObj.update({
+              'response_failed' : False,
+              'response_url' : e_response['response']['url'],
+              'response_status' : e_response['response']['status'],
+              'response_time' : e_response['response']['responseTime']
+            })
+
+          if 'securityDetails' in er_keys:
+            sec        = e_response['response']['securityDetails']
+            entryObj.update({
+              'response_security_protocol' : sec['protocol'],
+              'response_security_issuer' : sec['issuer'],
+            })
 
       self.requests.append(entryObj)
 
