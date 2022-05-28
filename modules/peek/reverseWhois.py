@@ -6,8 +6,9 @@ from json import dumps
 from requests import post
 
 from urllib3.exceptions import NewConnectionError
-from sessions.exceptions import AuthorisationException, QueryException
+from sessions.exceptions import AuthorisationException, ModuleException, QueryException
 
+from utils.renderers.whoisxmlapi.reverseWhoisRenderer import ReverseWhoisResponse
 from phrases import exceptions as e
 from src.globals import structures as st
 
@@ -22,38 +23,7 @@ try:
 except:
   RESULTS_CAP     = 10000
 
-def make_pretty(target, _dict):
-  amount                  = _dict['domainsCount']
-  output                  = ''
-
-  if 'nextPageSearchAfter' in _dict.keys():
-    next_page_search_after= _dict['nextPageSearchAfter']
-
-  if amount > 0:
-    output               += f'WhoisXMLApi found {str(amount)} domain results'
-
-    if 'domainsList' in _dict.keys():
-      output             += ':\n\n'
-      i                   = 0
-
-      for entry in _dict['domainsList']:
-        i                   = i+1
-        output             += f'  * {entry}\n'
-
-        if RESULTS_CAP is not None and i == int(RESULTS_CAP):
-          output           += f'\n Skipped output of {amount - i} other entries.\n'
-          break
-    else:
-      output             += '.'
-
-  else:
-    output               += f'WhoisXMLApi found no domain results for {target}.'
-  if 'nextPageSearchAfter' in _dict.keys() and next_page_search_after is not None:
-    output               += f'Next search after: {next_page_search_after}'
-
-  print(output)
-
-def clean_list(_list):
+def clean_terms_list(_list):
   l = len(_list)
   cleaned_list = []
 
@@ -64,14 +34,7 @@ def clean_list(_list):
 
   return cleaned_list
 
-def retrieve(target, **options):
-  timestamp     = ''
-  _options      = options.get('options')
-  searchType    = 'current'
-
-  if 'constants' in _options.keys() and 'HISTORIC' in _options['constants']:
-    searchType  = 'historic'
-
+def parse_terms(target):
   targets       = target.strip('\'" ')
   targets       = targets.split(' NOT ')
   wanted        = targets.pop(0)
@@ -81,8 +44,8 @@ def retrieve(target, **options):
   if unwanted is None:
     unwanted    = []
 
-  unwanted      = clean_list(unwanted)
-  wanted        = clean_list(wanted)
+  unwanted      = clean_terms_list(unwanted)
+  wanted        = clean_terms_list(wanted)
   max_amount    = 4
   LIMIT         = max_amount
   n_excludes    = []
@@ -119,8 +82,19 @@ def retrieve(target, **options):
     print(f'Max of {max_amount} terms exceeded. Dropped terms from inclusion: {str(n_includes)}')
   if len(n_excludes) > 0:
     print(f'Max of {max_amount} exclusion terms exceeded. Dropped terms from exclusion: {str(n_excludes)}')
+  return (includes, excludes)
 
-  data          = {
+def retrieve(target, **options):
+  timestamp     = ''
+  _options      = options.get('options')
+  searchType    = 'current'
+
+  if 'constants' in _options.keys() and 'HISTORIC' in _options['constants']:
+    searchType  = 'historic'
+
+  includes, excludes = parse_terms(target)
+
+  data = {
     'apiKey'      : W2_USER,
     'searchType'  : searchType,
     'mode'        : 'purchase',
@@ -150,30 +124,25 @@ def retrieve(target, **options):
 
     elif prepos_key == 'between':
       from_to = prepos_value
-      _dict = {
+      data.update({
         'createdDateFrom' : from_to[0],
         'createdDateTo'   : from_to[1]
-      }
-      data.update(_dict)
+      })
       print(f'Querying for records {prepos_key} : {from_to[0]} and {from_to[1]}')
 
   if 'mode' in _options.keys() and 'preview' in _options['mode']:
-    _dict = {
+    data.update({
       'mode' : 'preview'
-    }
-    data.update(_dict)
+    })
     print(f'Mode : Entry count preview')
 
   print(st['glorious_separation'])
 
-  data          = dumps(data)
-
+  data = dumps(data)
   try:
-    response    = post(endpoint, data=data)
-
+    response = post(endpoint, data=data)
   except NewConnectionError as f:
     raise QueryException(f'{e.query_whoisxmlapi_failed}: Exception while attempting to establish a HTTP connection: {f}.')
-
   except Exception as f:
     raise QueryException(f'{e.query_whoisxmlapi_failed}: {f}.')
 
@@ -185,14 +154,14 @@ def whoisQuery(*args, **options):
   if W2_USER is not None:
     try:
       result  = retrieve(target, **options)
-      _dict   = result.json()
       sc      = result.status_code
 
       if sc == 200:
         try:
-          make_pretty(target, _dict)
+          responseObj = ReverseWhoisResponse(result, target)
+          responseObj.render(RESULTS_CAP)
         except Exception as f:
-          raise f
+          raise ModuleException(f)
 
       elif sc == 401 or sc == 422:
         print(result.text, result.status_code)
@@ -202,9 +171,9 @@ def whoisQuery(*args, **options):
         raise QueryException(f'{e.query_whoisxmlapi_failed}: Status not OK, but {sc}.')
 
     except Exception as f:
-      raise f
+      raise ModuleException(f)
 
   else:
     raise AuthorisationException(f'{e.query_whoisxmlapi_failed}: WhoisXMLAPI key missing.')
 
-  return _dict
+  return responseObj

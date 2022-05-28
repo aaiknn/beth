@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
-from argparse import ArgumentParser
-from argparse import SUPPRESS
+from argparse import ArgumentParser, SUPPRESS
 from sys import argv
 
 parser      = ArgumentParser()
@@ -56,7 +55,7 @@ peek.add_argument(
   '--after', '-A',
   '--from',
   default=SUPPRESS,
-  help='Find records that have been created after a given date (format: YYYY-MM-DD).',
+  help='Find records that have been created from a given date on (format: YYYY-MM-DD).',
   type=str,
   dest='after',
   nargs=1,
@@ -65,8 +64,9 @@ peek.add_argument(
 
 peek.add_argument(
   '--before', '-B',
+  '--to',
   default=SUPPRESS,
-  help='Find records that have been created before a given date (format: YYYY-MM-DD).',
+  help='Find records that have been created up until a given date (format: YYYY-MM-DD).',
   type=str,
   dest='before',
   nargs=1,
