@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from sessions.exceptions import SubmissionException
+from sessions.exceptions import SubmissionException, RenderException, UnreachableException
 
 class UrlscanResponse:
   def __init__(self, response, target):
@@ -33,11 +33,9 @@ class UrlscanResponse:
 
     except Exception as f:
       if self.response.status_code is None:
-        raise f
-
+        raise UnreachableException(f'{f}: Response status code is None.')
       elif self.response.status_code != 200:
         raise SubmissionException(f'Response code {self.response.status_code}: {self.response.message} ({self.target}).')
-
       else:
-        print(str(self._dict))
+        raise RenderException(f'Render exception: {f}.\nResponse was:', str(self._dict))
 

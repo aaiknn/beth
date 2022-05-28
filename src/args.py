@@ -54,6 +54,7 @@ peek.add_argument(
 
 peek.add_argument(
   '--after', '-A',
+  '--from',
   default=SUPPRESS,
   help='Find records that have been created after a given date (format: YYYY-MM-DD).',
   type=str,

@@ -6,7 +6,7 @@ from json import dumps, loads
 from requests import get, post
 from time import sleep
 
-from sessions.exceptions import AuthorisationException
+from sessions.exceptions import AuthorisationException, RenderException, SubmissionException
 from utils.renderers.urlscan.UrlscanSubmissionResponse import UrlscanResponse
 from utils.renderers.urlscan.UrlscanScanResultResponse import UrlscanResponse as ScanResponse
 
@@ -37,7 +37,6 @@ def scan_submission(target):
       data.update(_dict)
 
   data        = dumps(data)
-
   response    = post(
     'https://urlscan.io/api/v1/scan/',
     headers = headers,
@@ -54,14 +53,14 @@ def scan(*args, **options):
   try:
     response  = scan_submission(target)
   except Exception as f:
-    raise f
+    raise SubmissionException(f)
 
   try:
     _dict       = UrlscanResponse(response, target)
     _dict.render()
 
   except Exception as f:
-    raise f
+    raise RenderException(f)
 
   jobData = response.json()
   return jobData
@@ -73,7 +72,7 @@ def retrieve_scan_results(url, target):
     _dict   = ScanResponse(response, target)
 
     if len(_dict.requests) > 0:
-      output      = ''
+      output      = '\n'
       output     += str(len(_dict.requests))
       output     += ' requests:\n'
 

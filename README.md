@@ -102,13 +102,13 @@ beth lookup --rwhois test@test.com
 
 #### Options
 ```sh
--H                Historic search
---after, -A       Query for records created after a given date
---before, -B      Query for records created before a given date
---between, -X     Query for records created between two given dates
---mode, -M        'preview' to retrieve only the amount of results. Will not consume
-                    any Domain Research Suite (DRS) credits.
-                  'default' to retrieve result entries. Consumes 1 DRS credit.
+-H                      Historic search
+--after, -A, --from     Query for records created from a given date on
+--before, -B            Query for records created before a given date
+--between, -X           Query for records created between two given dates
+--mode, -M              'preview' to retrieve only the amount of results. Will not consume
+                          any Domain Research Suite (DRS) credits.
+                        'default' to retrieve result entries. Consumes 1 DRS credit.
 ```
 
 Examples:

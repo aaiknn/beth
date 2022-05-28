@@ -21,6 +21,9 @@
 #     |       *-- DatabaseError
 #     |
 #     *-- SessionException
+#     |   |
+#     |   *-- RenderExcpetion
+#     |
 #     *-- SituationException
 #     |   |
 #     |   *-- AuthorisationException
@@ -62,6 +65,10 @@ class ModuleException(BethException):
     super().__init__(exceptionMessage)
 
 class SituationException(BethException):
+  def __init__(self, exceptionMessage=''):
+    super().__init__(exceptionMessage)
+
+class RenderException(SessionException):
   def __init__(self, exceptionMessage=''):
     super().__init__(exceptionMessage)
 

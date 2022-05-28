@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 from avionics.environmentals import SenseOfTime
-from sessions.exceptions import NavigationException
 from utils.trough.Trough import Trough
 from utils.trough.TroughObject import TroughObject
 
@@ -100,7 +99,7 @@ class CoursePlotter():
       troughObject.data = func(*args, options=_options)
 
     except Exception as f:
-      raise NavigationException(f)
+      print(f)
 
     finally:
       self.end_graciously(sTs, trough)

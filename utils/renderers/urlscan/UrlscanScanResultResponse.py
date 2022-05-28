@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+from sessions.exceptions import UnreachableException, RenderException
+
 class UrlscanResponse:
   def __init__(self, response, target):
     self.target   = target
@@ -126,6 +128,6 @@ class UrlscanResponse:
 
     except Exception as f:
       if self.response.status_code is None:
-        raise f
+        raise UnreachableException(f'{f}: Response status code is None.')
       else:
-        print(f'Exception while trying to render response: {f}')
+        raise RenderException(f'Exception while trying to render response: {f}')
