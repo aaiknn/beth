@@ -43,8 +43,8 @@ class UrlscanResponse:
 
       if 'remoteIPAddress' in re_keys and 'remotePort' in re_keys:
         entryObj.update({
-          'response_ip' : e_response['response']['remoteIPAddress'],
-          'response_port' : e_response['response']['remotePort']
+          'response_ip' : e_response['remoteIPAddress'],
+          'response_port' : e_response['remotePort']
         })
 
       if 'response' in re_keys:
@@ -53,7 +53,9 @@ class UrlscanResponse:
         if 'failed' in re_keys:
           entryObj.update({
             'response_failed' : True,
-            'response_error_text' : e_response['response']['failed']['errorText']
+            'response_error_text' : e_response['failed']['errorText'],
+            'request_failed_url' : e_request['request']['url'],
+            'request_failed_method' : e_request['request']['method']
           })
 
         else:
@@ -61,7 +63,11 @@ class UrlscanResponse:
             entryObj.update({
               'response_failed' : False,
               'response_url' : e_response['response']['url'],
-              'response_status' : e_response['response']['status'],
+              'response_status' : e_response['response']['status']
+            })
+
+          if 'responseTime' in er_keys:
+            entryObj.update({
               'response_time' : e_response['response']['responseTime']
             })
 
